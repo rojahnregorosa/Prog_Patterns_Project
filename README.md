@@ -1,6 +1,25 @@
 # Gym System
 The Gym Management System is an online platform designed to manage member and employee interactions within a gym. The system allows users to log in as either employees or members, each with specific capabilities according to their roles. The project’s functionality is modeled based on a detailed UML diagram, outlining the core classes, controllers, and interactions.
 
+## Design Paradigm (Follows an MVC structure)
+### Model
+- User: An abstract class representing common attributes and methods for members and employees.
+- Address: A class that handles the address details of users, including validation of zip codes.
+- Member: A class extending User, representing gym members with specific attributes and methods.
+- Employee: A class extending User, representing gym employees with management capabilities.
+- Membership: A class managing the membership details, including type and price differences.
+- Payment: A class handling payment details, including the amount, payment type (cash/card), and processing logic.
+- Notification Interface: An interface defining the structure for notifications, allowing implementation of email and SMS notifications.
+
+### View 
+- Handles user interface and interaction with user
+
+### Controller
+- UserController: A controller managing both members and employees within the system.
+- MemberController: A controller managing member-specific operations.
+- EmployeeController: A controller managing employee-specific operations.
+- Notification Interface: An interface representing the notification system, allowing both email and SMS notifications.
+
 ## Features
 ### Member
 - Login: Members can log in to access the system.
