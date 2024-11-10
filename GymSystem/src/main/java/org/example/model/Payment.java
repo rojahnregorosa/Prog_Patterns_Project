@@ -1,4 +1,7 @@
 package org.example.model;
 
-public class Payment {
+public interface Payment {
+    boolean processPayment(double amount);
+
+    PaymentType getPaymentType();
 }
