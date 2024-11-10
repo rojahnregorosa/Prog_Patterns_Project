@@ -1,13 +1,15 @@
 package org.example.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class Address {
-    private final String streetName;
-    private final String city;
-    private final String province;
-    private final String zipCode;
+    private String streetName;
+    private String city;
+    private String province;
+    private String zipCode;
 
     public Address(String city, String province, String streetName, String zipCode) {
         this.city = city;
