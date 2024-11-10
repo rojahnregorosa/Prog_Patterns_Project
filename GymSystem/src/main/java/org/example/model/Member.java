@@ -11,8 +11,8 @@ public class Member extends User {
     protected Membership membershipType;
     protected double balance;
 
-    public Member(String name, Address address, String phoneNumber, Membership membershipType, double balance) {
-        super(name, address, phoneNumber);
+    public Member(String fname, String lname, Address address, String phoneNumber, Membership membershipType, double balance) {
+        super(fname, lname, address, phoneNumber);
         this.memberId = memberIdCounter++;
         this.membershipType = membershipType;
         this.balance = balance;
