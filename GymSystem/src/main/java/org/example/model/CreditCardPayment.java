@@ -24,7 +24,7 @@ public class CreditCardPayment implements Payment{
     }
 
     /**
-     * authorizes if the information of credit card checkout out
+     * authorizes if the information of credit card checks out
      * @param amount to withdraw out of credit card
      * @return if all details are valid or not
      */
