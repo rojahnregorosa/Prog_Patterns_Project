@@ -23,7 +23,12 @@ public class Address {
         this.zipCode = zipCode;
     }
 
+    /**
+     * validates if the zip code is written correctly
+     * @param zipCode to validate
+     * @return if the zip code is valid or not
+     */
     private boolean isZipCodeValid(String zipCode) {
-        return zipCode != null && zipCode.matches("^[A-Z]\\d[A-Z]\\d[A-Z]\\d$]");
+        return zipCode != null && zipCode.matches("^[A-Z]\\d[A-Z]\\d[A-Z]\\d$");
     }
 }
