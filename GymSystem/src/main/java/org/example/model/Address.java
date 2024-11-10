@@ -22,6 +22,6 @@ public class Address {
     }
 
     private boolean isZipCodeValid(String zipCode) {
-        return zipCode != null && zipCode.matches("^[A-Z]\\d[A-Z]\\d[A-Z]\\d$");
+        return zipCode != null && zipCode.matches("^[A-Z]\\d[A-Z]\\d[A-Z]\\d$]");
     }
 }
