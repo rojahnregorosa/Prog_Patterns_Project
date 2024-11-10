@@ -1,8 +1,10 @@
 package org.example.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class Membership {
     private String type; // Should be "regular" or "premium"
     private double price;
