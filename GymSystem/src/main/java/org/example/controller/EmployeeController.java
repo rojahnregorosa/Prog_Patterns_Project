@@ -42,10 +42,10 @@ public class EmployeeController extends UserController {
     }
 
     // Method to view a member by their memberID
-    public Member viewMember(String memberID) {
-        for (Member member : members) {
-            if (Objects.equals(member.getMemberId(), memberID)) {
-                return member;
+    public Employee findEmployeeByID(String employeeID) {
+        for (Employee employee : employees) {
+            if (Objects.equals(employee.getEmployeeId(), employeeID)) {
+                return employee;
             }
         }
         return null;
