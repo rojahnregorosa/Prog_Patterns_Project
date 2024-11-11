@@ -6,15 +6,31 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Membership {
-    private String type; // Should be "regular" or "premium"
-    private double price;
+    private MembershipType type;
 
-    public Membership(double price, String type) {
-        this.price = price;
+    public Membership(MembershipType type) {
         this.type = type;
     }
 
-    public double calculatePriceDifference(Membership otherMembership) {
-        return Math.abs(this.price - otherMembership.getPrice());
+    /**
+     * Chooses price depending on the membership type
+     * @param frequencyType how frequent they want to pay
+     * @return the price
+     */
+    public double getPrice(String frequencyType) {
+        if ("monthly".equalsIgnoreCase(frequencyType)) {
+            return type.getMonthlyPrice();
+        } else if ("yearly".equalsIgnoreCase(frequencyType)) {
+            return type.getYearlyPrice();
+        }
+        throw new IllegalArgumentException("Invalid frequency: " + frequencyType);
+    }
+
+    public MembershipType getType() {
+        return type;
+    }
+
+    public void setType(MembershipType type) {
+        this.type = type;
     }
 }
