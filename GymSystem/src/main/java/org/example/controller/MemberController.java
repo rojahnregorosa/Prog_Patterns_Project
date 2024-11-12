@@ -19,14 +19,14 @@ public class MemberController extends UserController {
         Scanner sc = new Scanner(System.in);
         System.out.println("Sign up as a new member");
 
-        String firstName = Validator.validateName("Enter first name: ");
-        String lastName = Validator.validateName("Enter last name: ");
-        String phoneNumber = Validator.validatePhoneNumber();
-        int streetNumber = Validator.validateStreetNumber();
+        String firstName = Validator.validateAlphabetsOnly("Enter first name: ");
+        String lastName = Validator.validateAlphabetsOnly("Enter last name: ");
+        String phoneNumber = Validator.validatePhoneNumber("Enter phone number: ");
+        int streetNumber = Validator.validateStreetNumber("Enter street number: ");
         String streetName = Validator.validateAlphabetsOnly("Enter street name: ");
         String city = Validator.validateAlphabetsOnly("Enter city: ");
         String province = Validator.validateAlphabetsOnly("Enter province: ");
-        String zipCode = Validator.validateZipCode();
+        String zipCode = Validator.validateZipCode("Enter zip code: ");
 
         Address address = new Address(streetNumber, streetName, city, province, zipCode);
 
@@ -60,6 +60,11 @@ public class MemberController extends UserController {
             System.out.println("Profile Details:");
             System.out.println("ID: " + memberProfile.getMemberId());
             System.out.println("Name: " + memberProfile.getFname() + " " + memberProfile.getLname());
+            System.out.println("Street Number: " + memberProfile.getAddress().getStreetNumber());
+            System.out.println("Street Name: " + memberProfile.getAddress().getStreetName());
+            System.out.println("City: " + memberProfile.getAddress().getCity());
+            System.out.println("Province: " + memberProfile.getAddress().getProvince());
+            System.out.println("Zip Code: " + memberProfile.getAddress().getZipCode());
             System.out.println("Membership Type: " + memberProfile.getMembershipType().getType());
             System.out.println("Balance: $" + memberProfile.getBalance());
             // Add any other member details you want to display here
@@ -75,14 +80,14 @@ public class MemberController extends UserController {
     public void updateMemberProfile(Member member) {
         Scanner sc = new Scanner(System.in); // Local scanner instance for this method
 
-        String firstName = Validator.validateName("Enter first name: ");
-        String lastName = Validator.validateName("Enter last name: ");
-        String phoneNumber = Validator.validatePhoneNumber();
-        int streetNumber = Validator.validateStreetNumber();
+        String firstName = Validator.validateAlphabetsOnly("Enter first name: ");
+        String lastName = Validator.validateAlphabetsOnly("Enter last name: ");
+        String phoneNumber = Validator.validatePhoneNumber("Enter phone number: ");
+        int streetNumber = Validator.validateStreetNumber("Enter street number: ");
         String streetName = Validator.validateAlphabetsOnly("Enter street name: ");
         String city = Validator.validateAlphabetsOnly("Enter city: ");
         String province = Validator.validateAlphabetsOnly("Enter province: ");
-        String zipCode = Validator.validateZipCode();
+        String zipCode = Validator.validateZipCode("Enter zip code: ");
 
         // Creating a new Address object with all four arguments
         Address address = new Address(streetNumber, streetName, city, province, zipCode);
@@ -202,51 +207,31 @@ public class MemberController extends UserController {
                 sc.nextLine(); // Consume newline
 
                 payment = new CashPayment(cashReceived);
-                if (!payment.processPayment(requiredAmount)) {
-                    System.out.println("Cash payment failed: Insufficient amount.");
-                    return null;
-                }
             }
             case 2 -> { // Credit Card payment
-                System.out.print("Enter card number: ");
-                String cardNumber = sc.nextLine();
-                System.out.print("Enter card holder name: ");
-                String cardHolderName = sc.nextLine();
-                System.out.print("Enter expiration date (MM/YY): ");
-                String expiryDate = sc.nextLine();
-                System.out.print("Enter CVV: ");
-                int cvv = sc.nextInt();
-                sc.nextLine(); // Consume newline
+
+                String cardNumber = Validator.validateCardNumber("Enter card number: ");
+                String cardHolderName = Validator.validateCardHolderName("Enter card holder name: ");
+                String expiryDate = Validator.validateExpiryDate("Enter expiration date (MM/YY): ");
+                int cvv = Validator.validateCVV("Enter CVV: ");
 
                 payment = new CreditCardPayment(cardNumber, cardHolderName, expiryDate, cvv);
-                if (!payment.processPayment(requiredAmount)) {
-                    System.out.println("Credit card payment failed.");
-                    return null;
-                }
+
             }
             case 3 -> { // Debit Card payment
-                System.out.print("Enter card number: ");
-                String cardNumber = sc.nextLine();
-                System.out.print("Enter card holder name: ");
-                String cardHolderName = sc.nextLine();
-                System.out.print("Enter bank name: ");
-                String bankName = sc.nextLine();
-                System.out.print("Enter PIN: ");
-                int pin = sc.nextInt();
-                sc.nextLine(); // Consume newline
+
+                String cardNumber = Validator.validateCardNumber("Enter card number: ");
+                String cardHolderName = Validator.validateCardHolderName("Enter card holder name: ");
+                String bankName = Validator.validateBankName("Enter bank name: ");
+                int pin = Validator.validatePinNumber("Enter PIN: ");
 
                 payment = new DebitCardPayment(cardNumber, cardHolderName, bankName, pin);
-                if (!payment.processPayment(requiredAmount)) {
-                    System.out.println("Debit card payment failed.");
-                    return null;
-                }
             }
             default -> {
                 System.out.println("Invalid payment method selected.");
                 return null;
             }
         }
-
         return payment;
     }
 
