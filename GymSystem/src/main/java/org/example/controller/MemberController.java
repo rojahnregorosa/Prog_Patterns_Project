@@ -20,7 +20,7 @@ public class MemberController extends UserController {
     /**
      * Signs in new member to the system
      */
-    public void signUpMember() throws SQLException {
+    public void signUpMember() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Sign up as a new member");
 
@@ -69,7 +69,12 @@ public class MemberController extends UserController {
         // Creating the new member with an initial balance of 0
         Member newMember = new Member(firstName, lastName, address, phoneNumber, new Membership(membershipType), initialBalance);
 
-        MemberDatabase memberDatabase = MemberDatabase.getInstance();
+        MemberDatabase memberDatabase = null;
+        try {
+            memberDatabase = MemberDatabase.getInstance();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         if (memberDatabase.addMember(firstName, lastName, phoneNumber, address, membershipType, isMonthly)) {
             System.out.println("Signup successful! You can now log in using your Member ID.");
         } else {
