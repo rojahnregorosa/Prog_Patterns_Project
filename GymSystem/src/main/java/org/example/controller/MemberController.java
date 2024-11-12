@@ -46,7 +46,7 @@ public class MemberController extends UserController {
         // Add the new member to the in-memory list
         members.add(newMember);
 
-        System.out.println("Signup successful! You can now log in using your Member ID.");
+        System.out.println("Signup successful! You can now log in using your Member ID: " + newMember.getMemberId());
         return true;
     }
 
@@ -75,31 +75,17 @@ public class MemberController extends UserController {
     public void updateMemberProfile(Member member) {
         Scanner sc = new Scanner(System.in); // Local scanner instance for this method
 
-        System.out.print("Enter new phone number: ");
-        String phoneNumber = sc.nextLine();
-
-        // Prompting for each part of the address
-        System.out.print("Enter street number: ");
-        int streetNumber = sc.nextInt();
-        System.out.print("Enter street name: ");
-        String streetName = sc.nextLine();
-        System.out.print("Enter city: ");
-        String city = sc.nextLine();
-        System.out.print("Enter state: ");
-        String state = sc.nextLine();
-        System.out.print("Enter zip code: ");
-        String zipCode = sc.nextLine();
+        String firstName = Validator.validateName("Enter first name: ");
+        String lastName = Validator.validateName("Enter last name: ");
+        String phoneNumber = Validator.validatePhoneNumber();
+        int streetNumber = Validator.validateStreetNumber();
+        String streetName = Validator.validateAlphabetsOnly("Enter street name: ");
+        String city = Validator.validateAlphabetsOnly("Enter city: ");
+        String province = Validator.validateAlphabetsOnly("Enter province: ");
+        String zipCode = Validator.validateZipCode();
 
         // Creating a new Address object with all four arguments
-        Address address = new Address(streetNumber, streetName, city, state, zipCode);
-
-        if (User.isPhoneNumberValid(phoneNumber)) {
-            member.setPhoneNumber(phoneNumber);
-            member.setAddress(address);
-            System.out.println("Profile updated successfully.");
-        } else {
-            System.out.println("Failed to update profile. Check the phone number format.");
-        }
+        Address address = new Address(streetNumber, streetName, city, province, zipCode);
     }
 
     /**
@@ -110,9 +96,14 @@ public class MemberController extends UserController {
         Scanner sc = new Scanner(System.in); // Local scanner for input
 
         System.out.println("Current Membership Type: " + member.getMembershipType().getType());
-        System.out.println("1. Upgrade to Premium");
-        System.out.println("2. Downgrade to Regular");
-        System.out.println("3. Cancel Membership");
+
+        if (member.getMembershipType().getType() == MembershipType.REGULAR) {
+            System.out.println("1. Upgrade to Premium");
+            System.out.println("2. Cancel Membership");
+        } else {
+            System.out.println("1. Downgrade to Regular");
+            System.out.println("2. Cancel Membership");
+        }
         System.out.print("Choose an option: ");
 
         int choice = sc.nextInt();

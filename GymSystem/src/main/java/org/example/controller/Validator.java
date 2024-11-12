@@ -9,7 +9,7 @@ public class Validator {
         while (true) {
             System.out.print(prompt);
             String input = sc.nextLine();
-            if (input.matches("[a-zA-Z]+")) return input;
+            if (input.matches("[a-zA-Z]+")) return input.substring(0,1).toUpperCase() + input.substring(1).toLowerCase();
             System.out.println("Invalid input. Name must only contain letters.");
         }
     }
