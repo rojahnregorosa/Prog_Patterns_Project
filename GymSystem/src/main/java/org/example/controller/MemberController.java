@@ -117,7 +117,7 @@ public class MemberController extends UserController {
         String zipCode = Validator.validateZipCode("Enter zip code: ");
 
         // Creating a new Address object with all four arguments
-        Address address = new Address(streetNumber, streetName, city, state, zipCode);
+        Address address = new Address(streetNumber, streetName, city, province, zipCode);
 
         if (User.isPhoneNumberValid(phoneNumber)) {
             member.setPhoneNumber(phoneNumber);
