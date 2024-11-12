@@ -5,27 +5,26 @@ import java.util.Scanner;
 public class Validator {
     private static final Scanner sc = new Scanner(System.in);
 
-    public static String validateName(String prompt) {
+    /**
+     * validates if the phone number is typed correctly
+     * @return if the phone number is typed correctly
+     */
+    public static String validatePhoneNumber(String prompt) {
         while (true) {
             System.out.print(prompt);
-            String input = sc.nextLine();
-            if (input.matches("[a-zA-Z]+")) return input.substring(0,1).toUpperCase() + input.substring(1).toLowerCase();
-            System.out.println("Invalid input. Name must only contain letters.");
-        }
-    }
-
-    public static String validatePhoneNumber() {
-        while (true) {
-            System.out.print("Enter phone number: ");
             String phoneNumber = sc.nextLine();
-            if (phoneNumber.matches("\\d{10}")) return phoneNumber;
-            System.out.println("Invalid input. Phone number must be exactly 10 digits.");
+            if (phoneNumber.trim().matches("\\d{10}")) return phoneNumber;
+            else System.out.println("Invalid input. Phone number must be exactly 10 digits.");
         }
     }
 
-    public static int validateStreetNumber() {
+    /**
+     * validates if the street number only contains numbers
+     * @return if the street number only contains numbers
+     */
+    public static int validateStreetNumber(String prompt) {
         while (true) {
-            System.out.print("Enter street number: ");
+            System.out.print(prompt);
             if (sc.hasNextInt()) {
                 int streetNumber = sc.nextInt();
                 sc.nextLine(); // Consume newline
@@ -38,21 +37,130 @@ public class Validator {
         }
     }
 
+    /**
+     * validates if the string only contains letters
+     * @param prompt to tell you what to enter
+     * @return if the input only contains letters or not
+     */
     public static String validateAlphabetsOnly(String prompt) {
         while (true) {
             System.out.print(prompt);
             String input = sc.nextLine();
-            if (input.matches("[a-zA-Z ]+")) return input;
-            System.out.println("Invalid input. Field must only contain letters.");
+            if (input.matches("[a-zA-Z ]+")) return input.substring(0,1).toUpperCase() + input.substring(1).toLowerCase();
+            else System.out.println("Invalid input. Must only contain letters.");
         }
     }
 
-    public static String validateZipCode() {
+    /**
+     * validates the zip code
+     * @return if the zip code is valid or not
+     */
+    public static String validateZipCode(String prompt) {
         while (true) {
-            System.out.print("Enter zip code: ");
+            System.out.print(prompt);
             String zipCode = sc.nextLine();
-            if (zipCode.matches("[A-Za-z0-9]+")) return zipCode;
-            System.out.println("Invalid input. Zip code must contain alphanumeric characters only.");
+            if (zipCode.trim().matches("[A-Z]\\d[A-Z]\\d[A-Z]\\d$")) return zipCode;
+            else System.out.println("Invalid input. Zip code must contain alphanumeric uppercase characters only.");
+        }
+    }
+
+    /**
+     * validates the information of card number
+     * @return if the card number is valid or not
+     */
+    public static String validateCardNumber(String prompt) {
+        while (true) {
+            // Validate card number (should be 16 digits)
+            System.out.println(prompt);
+            String cardNumber = sc.nextLine();
+            if (cardNumber == null || cardNumber.trim().matches("^\\d{16}$")) return cardNumber;
+            else System.out.println("Invalid card number. Must be 16 digits.");
+        }
+    }
+
+    /**
+     * validates the information of cardholder number
+     * @return if the cardholder number is valid or not
+     */
+    public static String validateCardHolderName(String prompt) {
+        while (true) {
+            System.out.println(prompt);
+            String cardHolderName = sc.nextLine();
+            if (cardHolderName == null || cardHolderName.contains(" ")) return cardHolderName;
+            else System.out.println("Invalid cardholder name. Must include both first and last name with a space in between.");
+        }
+    }
+
+    /**
+     * validates the information of bank name
+     * @return if the bank name is valid or not
+     */
+    public static String validateBankName(String prompt) {
+        while (true) {
+            // Validate card number (should be 16 digits)
+            System.out.println(prompt);
+            String bankName = sc.nextLine();
+            if (bankName != null || bankName.trim().matches("[a-zA-Z]+")) return bankName;
+            else System.out.println("Invalid bank name. Must only contain letters.");
+        }
+    }
+
+    /**
+     * validates the information of pin
+     * @return if the pin is valid or not
+     */
+    public static int validatePinNumber(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            if (sc.hasNextInt()) {
+                int pin = sc.nextInt();
+                sc.nextLine(); // Consume newline
+                if (Integer.toString(pin).length() == 4 || String.valueOf(pin).trim().matches("^\\d{4}$")) return pin;
+                else System.out.println("Invalid pin. Must be 4 digits.");
+            } else {
+                System.out.println("Invalid input. Pin must be numeric.");
+                System.out.println("Card payment failed.");
+                sc.next(); // Clear invalid input
+            }
+        }
+    }
+
+    /**
+     * validates the information of the expiry date of the credit card
+     * @return if the expiry date is valid or not
+     */
+    public static String validateExpiryDate(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String expiryDate = sc.nextLine();
+
+            // Check if expiry date is in MM/YY format
+            if (expiryDate.matches("^(0[1-9]|1[0-2])/\\d{2}$")) {
+                return expiryDate;
+            } else {
+                System.out.println("Invalid expiry date. Must be in MM/YY format (e.g., 01/23).");
+            }
+        }
+    }
+
+    /**
+     * validates the information of cvv
+     * @return if the cvv is valid or not
+     */
+    public static int validateCVV(String prompt) {
+        while (true) {
+            // Validate cvv (should be 3 digits)
+            System.out.print(prompt);
+            if (sc.hasNextInt()) {
+                int cvv = sc.nextInt();
+                sc.nextLine(); // Consume newline
+                if (String.valueOf(cvv).length() == 3 || String.valueOf(cvv).trim().matches("^\\d{3}$")) return cvv;
+                else System.out.println("Invalid cvv. Must be 3 digits.");
+            } else {
+                System.out.println("Invalid input. CVV must be numeric.");
+                System.out.println("Card payment failed.");
+                sc.next(); // Clear invalid input
+            }
         }
     }
 }
