@@ -59,7 +59,7 @@ public class GymSystem {
         Member member = memberController.findMemberByID(memberID);
 
         if (member != null) {
-            System.out.println("Login successful! Welcome, " + member.getLname());
+            System.out.println("Login successful! Welcome, " + member.getFname());
             boolean memberSession = true;
 
             while (memberSession) {
@@ -93,7 +93,7 @@ public class GymSystem {
             System.out.println("Member not found. Please check your ID and try again.");
         }
     }
-  
+
     /**
      * handles the login for the employees
      */
@@ -142,4 +142,6 @@ public class GymSystem {
             System.out.println("Employee not found. Please check your ID and try again.");
         }
     }
+
+
 }
