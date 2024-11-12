@@ -36,33 +36,69 @@ public class GymSystem {
             sc.nextLine(); // Consume newline
 
             switch (choice) {
-                case 1:
-                    handleMemberLogin();
-                    break;
-                case 2:
-                    handleEmployeeLogin();
-                    break;
-                case 3:
+                case 1 -> handleMemberLogin();
+                case 2 -> handleEmployeeLogin();
+                case 3 -> {
                     running = false;
                     System.out.println("Exiting the system. Goodbye!");
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+                }
+                default -> System.out.println("Invalid choice. Please try again.");
             }
         }
     }
 
     private void handleMemberLogin() {
+        System.out.print("Enter Member ID: ");
+        String memberID = sc.nextLine();
+        Member member = memberController.findMemberByID(memberID);
 
+        if (member != null) {
+            System.out.println("Login successful! Welcome, " + member.getLname());
+            boolean memberSession = true;
+
+            while (memberSession) {
+                System.out.println("\nMember Options");
+                System.out.println("1. View Profile");
+                System.out.println("2. Update Profile");
+                System.out.println("3. Manage Membership");
+                System.out.println("4. Check Balance");
+                System.out.println("5. Make Payment");
+                System.out.println("6. View Notifications");
+                System.out.println("7. Log out.");
+
+                int choice = sc.nextInt();
+                sc.nextLine(); // Consume newline
+
+                switch (choice) {
+                    case 1 -> memberController.displayMemberProfile(member.getMemberId()); // Calls displayMemberProfile
+                    case 2 -> memberController.updateMemberProfile(member);
+                    case 3 -> memberController.manageMembership(member);
+                    case 4 -> memberController.checkBalance(member);
+                    case 5 -> initiatePayment(member);
+                    case 6 -> memberController.viewNotifications(member);
+                    case 7 -> {
+                        memberSession = false;
+                        System.out.println("Logging out...");
+                    }
+                    default -> System.out.println("Invalid choice. Please try again.");
+                }
+            }
+        } else {
+            System.out.println("Member not found. Please check your ID and try again.");
+        }
     }
 
     private void initiatePayment(Member member) {
+        Scanner sc = new Scanner(System.in);
 
+        System.out.print("Enter payment frequency (monthly/yearly): ");
+        String frequencyType = sc.nextLine();
+
+        // Call the makePayment method in MemberController to process the payment
+        if (!memberController.makePayment(member.getMemberId(), frequencyType)) {
+            System.out.println("Payment process failed.");
+        }
     }
-
-//    private Payment createPayment(int paymentMethodChoice) {
-//
-//    }
 
     private void handleEmployeeLogin() {
 
