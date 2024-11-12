@@ -15,6 +15,10 @@ public abstract class User {
         this.fname = fname;
         this.lname = lname;
         this.address = address;
-        this.phoneNumber = phoneNumber;
+        this.phoneNumber = String.valueOf(isPhoneNumberValid(phoneNumber));
+    }
+
+    public static boolean isPhoneNumberValid(String phoneNumber) {
+        return phoneNumber.matches("\\d{10}"); // Example validation for a 10-digit phone number
     }
 }
