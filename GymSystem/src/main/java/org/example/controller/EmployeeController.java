@@ -45,7 +45,7 @@ public class EmployeeController extends UserController {
         System.out.print("Enter phone number: ");
         String phoneNumber = scanner.nextLine();
         MembershipType type = getMembershipTypeFromInput();
-        Address address = new Address("123 Main St", "City", "Province", "12345"); // Example address
+        Address address = new Address(1234, "Main St", "City", "Province", "12345"); // Example address
 
         Member newMember = new Member(fname, lname, address, phoneNumber, new Membership(type), 0);
         boolean success = EmployeeController.addMember(newMember);
@@ -58,7 +58,7 @@ public class EmployeeController extends UserController {
     }
 
     /**
-     * helps the main method to add member
+     * helper method to add member
      * @param member to add
      * @return added member
      */
@@ -88,7 +88,7 @@ public class EmployeeController extends UserController {
     }
 
     /**
-     * helps main method remove member
+     * helper method to remove member
      * @param memberID to find to remove
      * @return removed member
      */

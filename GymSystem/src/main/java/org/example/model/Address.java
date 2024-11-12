@@ -10,17 +10,14 @@ public class Address {
     private String city;
     private String province;
     private String zipCode;
+    private int streetNumber;
 
-    public Address(String city, String province, String streetName, String zipCode) {
+    public Address(int streetNumber, String streetName, String city, String province, String zipCode) {
+        this.streetName = streetName;
         this.city = city;
         this.province = province;
-        this.streetName = streetName;
-
-        if (!isZipCodeValid(zipCode)) {
-            throw new IllegalArgumentException("Invalid Zip Code!");
-        }
-
         this.zipCode = zipCode;
+        this.streetNumber = streetNumber;
     }
 
     /**
