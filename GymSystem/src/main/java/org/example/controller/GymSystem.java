@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.model.Employee;
 import org.example.model.Member;
 
 import java.util.Scanner;
@@ -87,13 +88,15 @@ public class GymSystem {
             System.out.println("Member not found. Please check your ID and try again.");
         }
     }
-
+  
+    /**
+     * handles the login for the employees
+     */
     private void initiatePayment(Member member) {
         Scanner sc = new Scanner(System.in);
 
         System.out.print("Enter payment frequency (monthly/yearly): ");
         String frequencyType = sc.nextLine();
-
         // Call the makePayment method in MemberController to process the payment
         if (!memberController.makePayment(member.getMemberId(), frequencyType)) {
             System.out.println("Payment process failed.");
@@ -101,12 +104,37 @@ public class GymSystem {
     }
 
     private void handleEmployeeLogin() {
+        System.out.print("Enter Employee ID: ");
+        String employeeID = sc.nextLine();
+        Employee employee = employeeController.findEmployeeByID(employeeID);
 
+        if (employee != null) {
+            System.out.println("Login successful! Welcome, " + employee.getFname() + " " + employee.getLname());
+            boolean employeeSession = true;
+
+            while (employeeSession) {
+                System.out.println("\nEmployee Options:");
+                System.out.println("1. Add Member");
+                System.out.println("2. Remove Member");
+                System.out.println("3. Update Member");
+                System.out.println("4. Logout");
+
+                int choice = sc.nextInt();
+                sc.nextLine(); // Consume newline
+
+                switch (choice) {
+                    case 1 -> employeeController.promptAddMember();
+                    case 2 -> employeeController.promptRemoveMember();
+                    case 3 -> employeeController.promptUpdateMember();
+                    case 4 -> {
+                        employeeSession = false;
+                        System.out.println("Logging out...");
+                    }
+                    default -> System.out.println("Invalid choice. Please try again.");
+                }
+            }
+        } else {
+            System.out.println("Employee not found. Please check your ID and try again.");
+        }
     }
-
-//    private MembershipType getMembershipTypeFromInput() {
-//
-//    }
-
-
 }

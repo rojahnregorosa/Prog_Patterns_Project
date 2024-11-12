@@ -1,6 +1,11 @@
 package org.example;
+
+import org.example.controller.GymSystem;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+
+        GymSystem gymSystem = new GymSystem();
+        gymSystem.start();
     }
 }
