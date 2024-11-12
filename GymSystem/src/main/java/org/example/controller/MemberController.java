@@ -1,7 +1,9 @@
 package org.example.controller;
 
+import org.example.database.MemberDatabase;
 import org.example.model.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +20,7 @@ public class MemberController extends UserController {
     /**
      * Signs in new member to the system
      */
-    public void signUpMember() {
+    public void signUpMember() throws SQLException {
         Scanner sc = new Scanner(System.in);
         System.out.println("Sign up as a new member");
 
@@ -51,6 +53,7 @@ public class MemberController extends UserController {
 
         int frequencyChoice = sc.nextInt();
         sc.nextLine(); // Consume newline
+        boolean isMonthly = (frequencyChoice == 1);
 
         // Set initial balance based on payment frequency
         double initialBalance;
@@ -66,10 +69,12 @@ public class MemberController extends UserController {
         // Creating the new member with an initial balance of 0
         Member newMember = new Member(firstName, lastName, address, phoneNumber, new Membership(membershipType), initialBalance);
 
-        // Add the new member to the in-memory list
-        members.add(newMember);
-
-        System.out.println("Signup successful! You can now log in using your Member ID.");
+        MemberDatabase memberDatabase = MemberDatabase.getInstance();
+        if (memberDatabase.addMember(firstName, lastName, phoneNumber, address, membershipType, isMonthly)) {
+            System.out.println("Signup successful! You can now log in using your Member ID.");
+        } else {
+            System.out.println("Signup failed. Unable to add member to the database.");
+        }
     }
 
     /**
