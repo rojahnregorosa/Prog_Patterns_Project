@@ -31,15 +31,17 @@ public class GymSystem {
             System.out.println("\nSelect an option:");
             System.out.println("1. Login as Member");
             System.out.println("2. Login as Employee");
-            System.out.println("3. Exit");
+            System.out.println("3. Sign up as a new Member");
+            System.out.println("4. Exit");
 
             int choice = sc.nextInt();
-            sc.nextLine(); // Consume newline
+            sc.nextLine();
 
             switch (choice) {
                 case 1 -> handleMemberLogin();
                 case 2 -> handleEmployeeLogin();
-                case 3 -> {
+                case 3 -> memberController.signupMember();
+                case 4 -> {
                     running = false;
                     System.out.println("Exiting the system. Goodbye!");
                 }
@@ -48,6 +50,9 @@ public class GymSystem {
         }
     }
 
+    /**
+     * handles the log in for the members
+     */
     private void handleMemberLogin() {
         System.out.print("Enter Member ID: ");
         String memberID = sc.nextLine();

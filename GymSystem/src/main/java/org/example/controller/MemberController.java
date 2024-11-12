@@ -15,6 +15,41 @@ public class MemberController extends UserController {
         members = new ArrayList<>();
     }
 
+    public boolean signupMember() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Sign up as a new member");
+
+        String firstName = Validator.validateName("Enter first name: ");
+        String lastName = Validator.validateName("Enter last name: ");
+        String phoneNumber = Validator.validatePhoneNumber();
+        int streetNumber = Validator.validateStreetNumber();
+        String streetName = Validator.validateAlphabetsOnly("Enter street name: ");
+        String city = Validator.validateAlphabetsOnly("Enter city: ");
+        String province = Validator.validateAlphabetsOnly("Enter province: ");
+        String zipCode = Validator.validateZipCode();
+
+        Address address = new Address(streetNumber, streetName, city, province, zipCode);
+
+        // Prompt user to select membership type without a separate method
+        System.out.println("Select membership type:");
+        System.out.println("1. Regular - Monthly: $" + MembershipType.REGULAR.getMonthlyPrice() + ", Yearly: $" + MembershipType.REGULAR.getYearlyPrice());
+        System.out.println("2. Premium - Monthly: $" + MembershipType.PREMIUM.getMonthlyPrice() + ", Yearly: $" + MembershipType.PREMIUM.getYearlyPrice());
+
+        int typeChoice = sc.nextInt();
+        sc.nextLine(); // Consume newline
+
+        MembershipType membershipType = (typeChoice == 1) ? MembershipType.REGULAR : MembershipType.PREMIUM;
+
+        // Creating the new member with an initial balance of 0
+        Member newMember = new Member(firstName, lastName, address, phoneNumber, new Membership(membershipType), 0);
+
+        // Add the new member to the in-memory list
+        members.add(newMember);
+
+        System.out.println("Signup successful! You can now log in using your Member ID.");
+        return true;
+    }
+
     /**
      * Displays member profile
      * @param memberID the member id to check
@@ -44,8 +79,10 @@ public class MemberController extends UserController {
         String phoneNumber = sc.nextLine();
 
         // Prompting for each part of the address
-        System.out.print("Enter street address: ");
-        String street = sc.nextLine();
+        System.out.print("Enter street number: ");
+        int streetNumber = sc.nextInt();
+        System.out.print("Enter street name: ");
+        String streetName = sc.nextLine();
         System.out.print("Enter city: ");
         String city = sc.nextLine();
         System.out.print("Enter state: ");
@@ -54,7 +91,7 @@ public class MemberController extends UserController {
         String zipCode = sc.nextLine();
 
         // Creating a new Address object with all four arguments
-        Address address = new Address(street, city, state, zipCode);
+        Address address = new Address(streetNumber, streetName, city, state, zipCode);
 
         if (User.isPhoneNumberValid(phoneNumber)) {
             member.setPhoneNumber(phoneNumber);
