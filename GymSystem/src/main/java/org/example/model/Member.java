@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 public class Member extends User {
     protected static int memberIdCounter = 1;
-    protected String memberId; //maybe string
+    protected String memberId;
     protected Membership membershipType;
     protected double balance; //how much they have to pay
     private List<Notification> notifications;
@@ -23,12 +23,18 @@ public class Member extends User {
         this.notifications = new ArrayList<>();
     }
 
-    // Method to get the list of notifications
+    /**
+     *
+     * @return
+     */
     public List<Notification> getNotifications() {
         return notifications;
     }
 
-    // Method to add a notification
+    /**
+     *
+     * @param notification
+     */
     public void addNotification(Notification notification) {
         notifications.add(notification);
     }
