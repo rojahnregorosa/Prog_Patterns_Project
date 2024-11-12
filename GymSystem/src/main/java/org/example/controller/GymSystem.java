@@ -18,11 +18,9 @@ public class GymSystem {
         this.sc = new Scanner(System.in);
     }
 
-    // Example flow:
-    // Display options for login as Member or Employee
-    // Allow members to view/update their profile, make payments, etc.
-    // Allow employees to manage members, process payments, etc.
-    // This can be done through command-line input or a graphical interface
+    /**
+     * Runs the program
+     */
     public void start() {
         System.out.println("Welcome to the Gym Management System!");
         boolean running = true;
@@ -40,7 +38,7 @@ public class GymSystem {
             switch (choice) {
                 case 1 -> handleMemberLogin();
                 case 2 -> handleEmployeeLogin();
-                case 3 -> memberController.signupMember();
+                case 3 -> memberController.signUpMember();
                 case 4 -> {
                     running = false;
                     System.out.println("Exiting the system. Goodbye!");
@@ -76,7 +74,7 @@ public class GymSystem {
                 sc.nextLine(); // Consume newline
 
                 switch (choice) {
-                    case 1 -> memberController.displayMemberProfile(member.getMemberId()); // Calls displayMemberProfile
+                    case 1 -> memberController.displayMemberProfile(member.getMemberId());
                     case 2 -> memberController.updateMemberProfile(member);
                     case 3 -> memberController.manageMembership(member);
                     case 4 -> memberController.checkBalance(member);

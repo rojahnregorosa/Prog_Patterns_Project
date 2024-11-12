@@ -15,7 +15,10 @@ public class MemberController extends UserController {
         members = new ArrayList<>();
     }
 
-    public boolean signupMember() {
+    /**
+     * Signs in new member to the system
+     */
+    public void signUpMember() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Sign up as a new member");
 
@@ -39,15 +42,34 @@ public class MemberController extends UserController {
         sc.nextLine(); // Consume newline
 
         MembershipType membershipType = (typeChoice == 1) ? MembershipType.REGULAR : MembershipType.PREMIUM;
+        Membership membership = new Membership(membershipType);
+
+        // Ask for payment frequency
+        System.out.println("Select payment frequency:");
+        System.out.println("1. Monthly");
+        System.out.println("2. Yearly");
+
+        int frequencyChoice = sc.nextInt();
+        sc.nextLine(); // Consume newline
+
+        // Set initial balance based on payment frequency
+        double initialBalance;
+        if (frequencyChoice == 1) {
+            initialBalance = membershipType.getMonthlyPrice();
+        } else if (frequencyChoice == 2) {
+            initialBalance = membershipType.getYearlyPrice();
+        } else {
+            System.out.println("Invalid payment frequency. Defaulting to $0 balance.");
+            initialBalance = 0;
+        }
 
         // Creating the new member with an initial balance of 0
-        Member newMember = new Member(firstName, lastName, address, phoneNumber, new Membership(membershipType), 0);
+        Member newMember = new Member(firstName, lastName, address, phoneNumber, new Membership(membershipType), initialBalance);
 
         // Add the new member to the in-memory list
         members.add(newMember);
 
-        System.out.println("Signup successful! You can now log in using your Member ID: " + newMember.getMemberId());
-        return true;
+        System.out.println("Signup successful! You can now log in using your Member ID.");
     }
 
     /**
@@ -79,7 +101,7 @@ public class MemberController extends UserController {
      */
     public void updateMemberProfile(Member member) {
         Scanner sc = new Scanner(System.in); // Local scanner instance for this method
-
+      
         String firstName = Validator.validateAlphabetsOnly("Enter first name: ");
         String lastName = Validator.validateAlphabetsOnly("Enter last name: ");
         String phoneNumber = Validator.validatePhoneNumber("Enter phone number: ");
@@ -90,7 +112,15 @@ public class MemberController extends UserController {
         String zipCode = Validator.validateZipCode("Enter zip code: ");
 
         // Creating a new Address object with all four arguments
-        Address address = new Address(streetNumber, streetName, city, province, zipCode);
+        Address address = new Address(streetNumber, streetName, city, state, zipCode);
+
+        if (User.isPhoneNumberValid(phoneNumber)) {
+            member.setPhoneNumber(phoneNumber);
+            member.setAddress(address);
+            System.out.println("Profile updated successfully.");
+        } else {
+            System.out.println("Failed to update profile. Check the phone number format.");
+        }
     }
 
     /**
@@ -101,14 +131,9 @@ public class MemberController extends UserController {
         Scanner sc = new Scanner(System.in); // Local scanner for input
 
         System.out.println("Current Membership Type: " + member.getMembershipType().getType());
-
-        if (member.getMembershipType().getType() == MembershipType.REGULAR) {
-            System.out.println("1. Upgrade to Premium");
-            System.out.println("2. Cancel Membership");
-        } else {
-            System.out.println("1. Downgrade to Regular");
-            System.out.println("2. Cancel Membership");
-        }
+        System.out.println("1. Upgrade to Premium");
+        System.out.println("2. Downgrade to Regular");
+        System.out.println("3. Cancel Membership");
         System.out.print("Choose an option: ");
 
         int choice = sc.nextInt();
@@ -138,9 +163,30 @@ public class MemberController extends UserController {
      * @param member the member to check balance of
      */
     public void checkBalance(Member member) {
-        double balance = member.getBalance();
+        MembershipType membershipType = member.getMembershipType().getType(); // Get the type (REGULAR or PREMIUM)
+        Scanner sc = new Scanner(System.in);
+
+        // Ask user for payment frequency
+        System.out.println("Select payment frequency to check balance:");
+        System.out.println("1. Monthly");
+        System.out.println("2. Yearly");
+
+        int frequencyChoice = sc.nextInt();
+        sc.nextLine(); // Consume newline
+
+        double balance;
+        if (frequencyChoice == 1) {
+            balance = membershipType.getMonthlyPrice();
+        } else if (frequencyChoice == 2) {
+            balance = membershipType.getYearlyPrice();
+        } else {
+            System.out.println("Invalid payment frequency.");
+            return;
+        }
+
         System.out.println("Account Balance: $" + balance);
     }
+
 
     /**
      * Makes payment based on their membership type
