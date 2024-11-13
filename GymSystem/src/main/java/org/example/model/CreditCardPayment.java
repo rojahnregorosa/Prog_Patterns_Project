@@ -14,11 +14,6 @@ public class CreditCardPayment implements Payment{
     }
 
     @Override
-    public boolean processPayment(double amount) {
-        return true;
-    }
-
-    @Override
     public PaymentType getPaymentType() {
         return PaymentType.CREDIT_CARD;
     }

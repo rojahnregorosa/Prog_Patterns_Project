@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Scanner;
 
 @Getter
-public class EmployeeController extends UserController {
+public class EmployeeController {
     private static List<Member> members;
     private List<Employee> employees;
 

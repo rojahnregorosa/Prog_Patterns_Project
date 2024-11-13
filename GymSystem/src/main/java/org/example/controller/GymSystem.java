@@ -6,13 +6,11 @@ import org.example.model.Member;
 import java.util.Scanner;
 
 public class GymSystem {
-    private final UserController userController;
     private final MemberController memberController;
     private final EmployeeController employeeController;
     private final Scanner sc;
 
     public GymSystem() {
-        this.userController = new UserController();
         this.memberController = new MemberController();
         this.employeeController = new EmployeeController();
         this.sc = new Scanner(System.in);
@@ -65,7 +63,7 @@ public class GymSystem {
                 System.out.println("1. View Profile");
                 System.out.println("2. Update Profile");
                 System.out.println("3. Manage Membership");
-                System.out.println("4. Check Balance");
+                System.out.println("4. Check Prices");
                 System.out.println("5. Make Payment");
                 System.out.println("6. View Notifications");
                 System.out.println("7. Log out.");
@@ -81,7 +79,7 @@ public class GymSystem {
                             memberSession = false; // End the session if membership is canceled
                         }
                     }
-                    case 4 -> memberController.checkBalance(member);
+                    case 4 -> memberController.checkPrices(member);
                     case 5 -> initiatePayment(member);
                     case 6 -> memberController.viewNotifications(member);
                     case 7 -> {

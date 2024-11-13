@@ -8,11 +8,6 @@ public class CashPayment implements Payment {
     }
 
     @Override
-    public boolean processPayment(double amount) {
-        return cashReceived >= amount;
-    }
-
-    @Override
     public PaymentType getPaymentType() {
         return PaymentType.CASH;
     }
