@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class MemberController extends UserController {
+public class MemberController {
     private List<Member> members;
 
     public MemberController() {
@@ -148,9 +148,14 @@ public class MemberController extends UserController {
     public boolean manageMembership(Member member) {
         Scanner sc = new Scanner(System.in); // Local scanner for input
 
+
         System.out.println("Current Membership Type: " + member.getMembershipType().getType());
-        System.out.println("1. Upgrade to Premium");
-        System.out.println("2. Downgrade to Regular");
+
+        if (member.getMembershipType().getType().equals(MembershipType.PREMIUM)) {
+            System.out.println("1. Downgrade to Regular");
+        } else {
+            System.out.println("1. Upgrade to Premium");
+        }
         System.out.println("3. Cancel Membership");
         System.out.print("Choose an option: ");
 
@@ -193,29 +198,29 @@ public class MemberController extends UserController {
      * Checks balance of member
      * @param member the member to check balance of
      */
-    public void checkBalance(Member member) {
+    public void checkPrices(Member member) {
         MembershipType membershipType = member.getMembershipType().getType(); // Get the type (REGULAR or PREMIUM)
         Scanner sc = new Scanner(System.in);
 
         // Ask user for payment frequency
-        System.out.println("Select payment frequency to check balance:");
+        System.out.println("Select payment frequency to check prices:");
         System.out.println("1. Monthly");
         System.out.println("2. Yearly");
 
         int frequencyChoice = sc.nextInt();
         sc.nextLine(); // Consume newline
 
-        double balance;
+        double prices;
         if (frequencyChoice == 1) {
-            balance = membershipType.getMonthlyPrice();
+            prices = membershipType.getMonthlyPrice();
         } else if (frequencyChoice == 2) {
-            balance = membershipType.getYearlyPrice();
+            prices = membershipType.getYearlyPrice();
         } else {
             System.out.println("Invalid payment frequency.");
             return;
         }
 
-        System.out.println("Account Balance: $" + balance);
+        System.out.println("Prices: $" + prices);
     }
 
 
@@ -279,7 +284,7 @@ public class MemberController extends UserController {
 
         switch (paymentChoice) {
             case 1 -> { // Cash payment
-                System.out.print("Enter cash received: ");
+                System.out.print("Enter cash received: $");
                 double cashReceived = sc.nextDouble();
                 sc.nextLine(); // Consume newline
 
@@ -367,7 +372,6 @@ public class MemberController extends UserController {
                         // Construct the Address object
                         address = new Address(streetNumber, streetName, city, province, zipCode);
                     }
-
                     // If address is null here, handle it accordingly (e.g., log or set a default)
 
                     // Create the MembershipType and Member object
