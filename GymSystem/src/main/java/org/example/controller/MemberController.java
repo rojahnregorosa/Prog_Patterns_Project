@@ -1,12 +1,15 @@
 package org.example.controller;
 
+import org.example.database.DatabaseConnection;
 import org.example.database.MemberDatabase;
 import org.example.model.*;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class MemberController extends UserController {
@@ -76,7 +79,7 @@ public class MemberController extends UserController {
             throw new RuntimeException(e);
         }
         if (memberDatabase.addMember(firstName, lastName, phoneNumber, address, membershipType, isMonthly)) {
-            System.out.println("Signup successful! You can now log in using your Member ID.");
+            System.out.println("Signup successful! You can now log in using your Member ID : " + newMember.getMemberId());
         } else {
             System.out.println("Signup failed. Unable to add member to the database.");
         }
@@ -308,16 +311,58 @@ public class MemberController extends UserController {
     }
 
     /**
-     * Find member by id
+     * Find member by id in database
      * @param memberID member to find
      * @return member
      */
     public Member findMemberByID(String memberID) {
-        for (Member member : members) {
-            if (Objects.equals(member.getMemberId(), memberID)) {
-                return member;
+        String memberQuery = "SELECT * FROM Members WHERE id = ?";
+        String addressQuery = "SELECT * FROM Addresses WHERE id = ?"; // Adjust if different
+
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement memberStmt = conn.prepareStatement(memberQuery)) {
+
+            memberStmt.setString(1, memberID);
+            ResultSet memberRs = memberStmt.executeQuery();
+
+            if (memberRs.next()) {
+                String firstName = memberRs.getString("first_name");
+                String lastName = memberRs.getString("last_name");
+                String phoneNumber = memberRs.getString("phone_number");
+                String membershipType = memberRs.getString("membership_type");
+                double balance = memberRs.getDouble("balance");
+                String paymentFrequency = memberRs.getString("payment_frequency");
+
+                // Fetch address ID and query the Addresses table
+                int addressId = memberRs.getInt("address_id");
+                try (PreparedStatement addressStmt = conn.prepareStatement(addressQuery)) {
+                    addressStmt.setInt(1, addressId);
+                    ResultSet addressRs = addressStmt.executeQuery();
+
+                    Address address = null;
+                    if (addressRs.next()) {
+                        int streetNumber = addressRs.getInt("street_number");
+                        String streetName = addressRs.getString("street_name");
+                        String city = addressRs.getString("city");
+                        String province = addressRs.getString("province");
+                        String zipCode = addressRs.getString("zip_code");
+
+                        // Construct the Address object
+                        address = new Address(streetNumber, streetName, city, province, zipCode);
+                    }
+
+                    // If address is null here, handle it accordingly (e.g., log or set a default)
+
+                    // Create the MembershipType and Member object
+                    MembershipType type = MembershipType.valueOf(membershipType.toUpperCase());
+                    return new Member(firstName, lastName, address, phoneNumber, new Membership(type), balance);
+                }
             }
+        } catch (SQLException e) {
+            System.out.println("Error finding member by ID: " + e.getMessage());
         }
+        System.out.println("Member not found.");
         return null;
     }
+
 }

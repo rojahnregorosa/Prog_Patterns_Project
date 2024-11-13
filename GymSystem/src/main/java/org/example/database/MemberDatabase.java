@@ -13,7 +13,7 @@ public class MemberDatabase {
     private Connection connection;
 
     private MemberDatabase() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:sqlite:your_database_path");
+        connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/database/gym_database.db");
     }
 
     public static MemberDatabase getInstance() throws SQLException {
