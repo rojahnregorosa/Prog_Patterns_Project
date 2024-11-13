@@ -7,11 +7,11 @@ import java.sql.Statement;
 public class DatabaseSetup {
 
     /**
-     *
-     * @param conn
+     * Creates tables in the database
      */
-    public static void createTables(Connection conn) {
-        try (Statement stmt = conn.createStatement()) {
+    public static void createTables() {
+        try (Connection conn = DatabaseConnection.connect(); // Adjust this to your actual connection retrieval
+            Statement stmt = conn.createStatement()) {
             String createMembersTable = """
                 CREATE TABLE IF NOT EXISTS Members (
                     id INTEGER PRIMARY KEY,
