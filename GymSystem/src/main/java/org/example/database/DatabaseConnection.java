@@ -15,7 +15,6 @@ public class DatabaseConnection {
     public static Connection connect() {
         try {
             conn = DriverManager.getConnection(URL);
-            System.out.println("Connection to SQLite has been established.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -29,7 +28,6 @@ public class DatabaseConnection {
         try {
             if (conn != null && !conn.isClosed()) {
                 conn.close();
-                System.out.println("Connection to SQLite has been closed.");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
