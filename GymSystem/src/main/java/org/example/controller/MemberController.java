@@ -78,7 +78,7 @@ public class MemberController extends UserController {
             throw new RuntimeException(e);
         }
         if (memberDatabase.addMember(firstName, lastName, phoneNumber, address, membershipType, isMonthly)) {
-            System.out.println("Sign-up successful! Member can now log in using your Member ID.");
+            System.out.println("Signup successful! You can now log in using your Member ID : " + newMember.getMemberId());
         } else {
             System.out.println("Sign-up failed. Unable to add member to the database.");
         }
@@ -314,7 +314,7 @@ public class MemberController extends UserController {
     }
 
     /**
-     * Find member by id
+     * Find member by id in database
      * @param memberID member to find
      * @return member
      */
@@ -367,4 +367,5 @@ public class MemberController extends UserController {
         System.out.println("Member not found.");
         return null;
     }
+
 }
