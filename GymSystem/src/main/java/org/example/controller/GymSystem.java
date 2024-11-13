@@ -57,7 +57,7 @@ public class GymSystem {
         Member member = memberController.findMemberByID(memberID);
 
         if (member != null) {
-            System.out.println("Login successful! Welcome, " + member.getFname());
+            System.out.println("Login successful! Welcome, " + member.getFname() + " " + member.getLname());
             boolean memberSession = true;
 
             while (memberSession) {
@@ -118,8 +118,8 @@ public class GymSystem {
             while (employeeSession) {
                 System.out.println("\nEmployee Options:");
                 System.out.println("1. Add Member");
-                System.out.println("2. Remove Member");
-                System.out.println("3. Update Member");
+                System.out.println("2. Update Member");
+                System.out.println("3. Remove Member");
                 System.out.println("4. Logout");
 
                 int choice = sc.nextInt();
@@ -127,8 +127,8 @@ public class GymSystem {
 
                 switch (choice) {
                     case 1 -> employeeController.promptAddMember();
-                    case 2 -> employeeController.promptRemoveMember();
-                    case 3 -> employeeController.promptUpdateMember();
+                    case 2 -> employeeController.promptUpdateMember();
+                    case 3 -> employeeController.promptRemoveMember();
                     case 4 -> {
                         employeeSession = false;
                         System.out.println("Logging out...");
@@ -140,6 +140,4 @@ public class GymSystem {
             System.out.println("Employee not found. Please check your ID and try again.");
         }
     }
-
-
 }
