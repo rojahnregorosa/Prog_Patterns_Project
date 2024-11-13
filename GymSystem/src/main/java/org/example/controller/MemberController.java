@@ -69,6 +69,7 @@ public class MemberController extends UserController {
             initialBalance = 0;
         }
 
+        // Creating the new member with an initial balance of 0
         Member newMember = new Member(firstName, lastName, address, phoneNumber, new Membership(membershipType), initialBalance);
 
         MemberDatabase memberDatabase = null;
@@ -77,10 +78,15 @@ public class MemberController extends UserController {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        if (memberDatabase.addMember(firstName, lastName, phoneNumber, address, membershipType, isMonthly)) {
+
+        // Add the member to the database and get the member ID
+        int memberId = memberDatabase.addMember(firstName, lastName, phoneNumber, address, membershipType, isMonthly);
+
+        if (memberId != -1) {
+            newMember.setMemberId(String.valueOf(memberId)); // Set the generated member ID
             System.out.println("Signup successful! You can now log in using your Member ID : " + newMember.getMemberId());
         } else {
-            System.out.println("Sign-up failed. Unable to add member to the database.");
+            System.out.println("Signup failed. Unable to add member to the database.");
         }
     }
 
@@ -113,7 +119,7 @@ public class MemberController extends UserController {
      */
     public void updateMemberProfile(Member member) {
         Scanner sc = new Scanner(System.in); // Local scanner instance for this method
-      
+
         String firstName = Validator.validateAlphabetsOnly("Enter first name: ");
         String lastName = Validator.validateAlphabetsOnly("Enter last name: ");
         String phoneNumber = Validator.validatePhoneNumber("Enter phone number: ");
@@ -139,40 +145,49 @@ public class MemberController extends UserController {
      * Manages membership of member
      * @param member to be managed
      */
-    public void manageMembership(Member member) {
+    public boolean manageMembership(Member member) {
         Scanner sc = new Scanner(System.in); // Local scanner for input
 
         System.out.println("Current Membership Type: " + member.getMembershipType().getType());
-
-        if (member.getMembershipType().getType() == MembershipType.PREMIUM) {
-            System.out.println("1. Downgrade to Regular");
-        } else {
-            System.out.println("1. Upgrade to Premium");
-        }
-        System.out.println("2. Cancel Membership");
+        System.out.println("1. Upgrade to Premium");
+        System.out.println("2. Downgrade to Regular");
+        System.out.println("3. Cancel Membership");
         System.out.print("Choose an option: ");
 
         int choice = sc.nextInt();
         sc.nextLine(); // Consume newline
 
-        switch (choice) {
-            case 1 -> {
-                member.getMembershipType().setType(MembershipType.PREMIUM); // Upgrade to Premium
-                System.out.println("Membership upgraded to Premium.");
+        try {
+            MemberDatabase memberDatabase = MemberDatabase.getInstance(); // Get instance of MemberDatabase
+
+            switch (choice) {
+                case 1 -> {
+                    member.getMembershipType().setType(MembershipType.PREMIUM); // Upgrade to Premium
+                    System.out.println("Membership upgraded to Premium.");
+                }
+                case 2 -> {
+                    member.getMembershipType().setType(MembershipType.REGULAR); // Downgrade to Regular
+                    System.out.println("Membership downgraded to Regular.");
+                }
+                case 3 -> {
+                    // Remove the member from the database
+                    if (memberDatabase.removeMemberByID(Integer.parseInt(member.getMemberId()))) {
+                        System.out.println("Membership canceled and member removed from the database.");
+                        return true; // Return true to indicate the session should end
+                    } else {
+                        System.out.println("Failed to cancel membership or member not found.");
+                    }
+                }
+                default -> {
+                    System.out.println("Invalid choice.");
+                }
             }
-            case 2 -> {
-                member.getMembershipType().setType(MembershipType.REGULAR); // Downgrade to Regular
-                System.out.println("Membership downgraded to Regular.");
-            }
-            case 3 -> {
-                member.setMembershipType(null); // Cancels membership by setting it to null
-                System.out.println("Membership canceled.");
-            }
-            default -> {
-                System.out.println("Invalid choice.");
-            }
+        } catch (SQLException e) {
+            System.out.println("Error accessing the database: " + e.getMessage());
         }
+        return false; // Return false to continue the session
     }
+
 
     /**
      * Checks balance of member
@@ -334,7 +349,6 @@ public class MemberController extends UserController {
                 String phoneNumber = memberRs.getString("phone_number");
                 String membershipType = memberRs.getString("membership_type");
                 double balance = memberRs.getDouble("balance");
-                String paymentFrequency = memberRs.getString("payment_frequency");
 
                 // Fetch address ID and query the Addresses table
                 int addressId = memberRs.getInt("address_id");

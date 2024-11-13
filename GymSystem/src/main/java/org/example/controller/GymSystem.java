@@ -76,7 +76,11 @@ public class GymSystem {
                 switch (choice) {
                     case 1 -> memberController.displayMemberProfile(member.getMemberId());
                     case 2 -> memberController.updateMemberProfile(member);
-                    case 3 -> memberController.manageMembership(member);
+                    case 3 -> {
+                        if (memberController.manageMembership(member)) {
+                            memberSession = false; // End the session if membership is canceled
+                        }
+                    }
                     case 4 -> memberController.checkBalance(member);
                     case 5 -> initiatePayment(member);
                     case 6 -> memberController.viewNotifications(member);
