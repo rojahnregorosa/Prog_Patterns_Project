@@ -14,11 +14,6 @@ public class DebitCardPayment implements Payment {
     }
 
     @Override
-    public boolean processPayment(double amount) {
-        return true;
-    }
-
-    @Override
     public PaymentType getPaymentType() {
         return PaymentType.DEBIT_CARD;
     }
