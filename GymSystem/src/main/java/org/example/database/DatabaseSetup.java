@@ -10,70 +10,72 @@ public class DatabaseSetup {
      * Creates tables in the database
      */
     public static void createTables() {
-        try (Connection conn = DatabaseConnection.connect(); // Adjust this to your actual connection retrieval
-            Statement stmt = conn.createStatement()) {
-            String createMembersTable = """
-                CREATE TABLE IF NOT EXISTS Members (
-                    id INTEGER PRIMARY KEY,
-                    first_name TEXT NOT NULL,
-                    last_name TEXT NOT NULL,
-                    phone_number TEXT NOT NULL,
-                    address_id INTEGER,
-                    membership_type TEXT,
-                    balance REAL DEFAULT 0,
-                    payment_frequency TEXT,
-                    FOREIGN KEY (address_id) REFERENCES Addresses(id)
-                );
-            """;
-            stmt.execute(createMembersTable);
-
-            String createEmployeesTable = """
-                CREATE TABLE IF NOT EXISTS Employees (
-                    id INTEGER PRIMARY KEY,
-                    first_name TEXT NOT NULL,
-                    last_name TEXT NOT NULL,
-                    position TEXT,
-                    email TEXT,
-                    phone_number TEXT
-                );
-            """;
-            stmt.execute(createEmployeesTable);
-
-            String createPaymentsTable = """
-                CREATE TABLE IF NOT EXISTS Payments (
-                    id INTEGER PRIMARY KEY,
-                    member_id INTEGER,
-                    amount REAL,
-                    payment_date TEXT,
-                    payment_method TEXT,
-                    FOREIGN KEY (member_id) REFERENCES Members(id)
-                );
-            """;
-            stmt.execute(createPaymentsTable);
-
-            String createMembershipTypesTable = """
-                CREATE TABLE IF NOT EXISTS MembershipTypes (
-                    type_name TEXT PRIMARY KEY,
-                    monthly_price REAL,
-                    yearly_price REAL
-                );
-            """;
-            stmt.execute(createMembershipTypesTable);
+        try (Connection conn = DatabaseConnection.connect();
+             Statement stmt = conn.createStatement()) {
 
             String createAddressesTable = """
-                CREATE TABLE IF NOT EXISTS Addresses (
-                    id INTEGER PRIMARY KEY,
-                    street TEXT,
-                    city TEXT,
-                    province TEXT,
-                    zip_code TEXT
-                );
-            """;
+            CREATE TABLE IF NOT EXISTS Addresses (
+                id INTEGER PRIMARY KEY,
+                street_number INTEGER,
+                street_name TEXT,
+                city TEXT,
+                province TEXT,
+                zip_code TEXT
+            );
+        """;
             stmt.execute(createAddressesTable);
 
-            System.out.println("Tables created successfully.");
+            String createMembersTable = """
+            CREATE TABLE IF NOT EXISTS Members (
+                id INTEGER PRIMARY KEY,
+                first_name TEXT NOT NULL,
+                last_name TEXT NOT NULL,
+                phone_number TEXT NOT NULL,
+                membership_type TEXT,
+                balance REAL DEFAULT 0,
+                address_id INTEGER,
+                FOREIGN KEY (address_id) REFERENCES Addresses(id)
+            );
+        """;
+            stmt.execute(createMembersTable);
+
+            String createPaymentsTable = """
+            CREATE TABLE IF NOT EXISTS Payments (
+                id INTEGER PRIMARY KEY,
+                member_id INTEGER,
+                amount REAL,
+                payment_date TEXT,
+                payment_method TEXT,
+                FOREIGN KEY (member_id) REFERENCES Members(id)
+            );
+        """;
+            stmt.execute(createPaymentsTable);
+
         } catch (SQLException e) {
-            System.out.println("Error creating tables: " + e.getMessage());
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     *
+     */
+    public static void dropTables() {
+        try (Connection conn = DatabaseConnection.connect();
+             Statement stmt = conn.createStatement()) {
+
+            String dropEmployeeTable = "DROP TABLE IF EXISTS Employees;";
+//            String dropMemberTable = "DROP TABLE IF EXISTS Members;";
+            String dropMembershipTypeTable = "DROP TABLE IF EXISTS MembershipTypes;";
+            String dropAddressesTable = "DROP TABLE IF EXISTS Addresses;";
+
+            stmt.execute(dropAddressesTable);
+            stmt.execute(dropEmployeeTable);
+//            stmt.execute(dropMemberTable);
+            stmt.execute(dropMembershipTypeTable);
+
+            System.out.println("Tables deleted successfully.");
+        } catch (SQLException e) {
+            System.out.println("Error deleting tables: " + e.getMessage());
         }
     }
 }
