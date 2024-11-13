@@ -1,7 +1,14 @@
 package org.example.controller;
 
 import lombok.Getter;
-import org.example.model.*;
+import org.example.database.DatabaseConnection;
+import org.example.model.Employee;
+import org.example.model.Member;
+import org.example.model.MembershipType;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,25 +43,8 @@ public class EmployeeController extends UserController {
      * adds member to the system
      */
     public void promptAddMember() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter member first name: ");
-        String fname = scanner.nextLine();
-        System.out.print("Enter member first name: ");
-        String lname = scanner.nextLine();
-        System.out.print("Enter phone number: ");
-        String phoneNumber = scanner.nextLine();
-        MembershipType type = getMembershipTypeFromInput();
-        Address address = new Address(1234, "Main St", "City", "Province", "12345"); // Example address
-
-        Member newMember = new Member(fname, lname, address, phoneNumber, new Membership(type), 0);
-        boolean success = EmployeeController.addMember(newMember);
-
-        if (success) {
-            System.out.println("Member added successfully.");
-        } else {
-            System.out.println("Failed to add member.");
-        }
+        MemberController memberController = new MemberController();
+        memberController.signUpMember();
     }
 
     /**
@@ -93,29 +83,46 @@ public class EmployeeController extends UserController {
      * @return removed member
      */
     private static boolean removeMember(String memberID) {
-        return members.removeIf(member -> Objects.equals(member.getMemberId(), memberID));
+        String sql = "DELETE FROM Members WHERE id = ?";
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, Integer.parseInt(memberID));
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("Member deleted successfully.");
+                return true;
+            } else {
+                System.out.println("Member not found.");
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error deleting member: " + e.getMessage());
+            return false;
+        }
     }
+
     public void promptUpdateMember() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter member ID to update: ");
-        String memberID = scanner.nextLine();
-        System.out.println("Feature under construction.");
+        System.out.print("Enter Member ID: ");
+        String id = scanner.nextLine();
+        for (Member member : members) {
+            if (member.getMemberId().equals(id)) {
+                updateMember(id, member);
+            }
+        }
     }
 
     /**
      * helps main method update member
      * @param memberID to find
      * @param updatedMember to update
-     * @return updated member
      */
-    private boolean updateMember(String memberID, Member updatedMember) {
-        for (int i = 0; i < members.size(); i++) {
-            if (Objects.equals(members.get(i).getMemberId(), memberID)) {
-                members.set(i, updatedMember);
-                return true;
-            }
+    public void updateMember(String memberID, Member updatedMember) {
+        MemberController memberController = new MemberController();
+        if (memberID.equals(updatedMember.getMemberId())) {
+            memberController.updateMemberProfile(updatedMember);
         }
-        return false;
     }
 
     /**

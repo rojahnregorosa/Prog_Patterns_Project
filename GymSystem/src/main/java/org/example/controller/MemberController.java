@@ -69,7 +69,6 @@ public class MemberController extends UserController {
             initialBalance = 0;
         }
 
-        // Creating the new member with an initial balance of 0
         Member newMember = new Member(firstName, lastName, address, phoneNumber, new Membership(membershipType), initialBalance);
 
         MemberDatabase memberDatabase = null;
@@ -81,7 +80,7 @@ public class MemberController extends UserController {
         if (memberDatabase.addMember(firstName, lastName, phoneNumber, address, membershipType, isMonthly)) {
             System.out.println("Signup successful! You can now log in using your Member ID : " + newMember.getMemberId());
         } else {
-            System.out.println("Signup failed. Unable to add member to the database.");
+            System.out.println("Sign-up failed. Unable to add member to the database.");
         }
     }
 
@@ -144,9 +143,13 @@ public class MemberController extends UserController {
         Scanner sc = new Scanner(System.in); // Local scanner for input
 
         System.out.println("Current Membership Type: " + member.getMembershipType().getType());
-        System.out.println("1. Upgrade to Premium");
-        System.out.println("2. Downgrade to Regular");
-        System.out.println("3. Cancel Membership");
+
+        if (member.getMembershipType().getType() == MembershipType.PREMIUM) {
+            System.out.println("1. Downgrade to Regular");
+        } else {
+            System.out.println("1. Upgrade to Premium");
+        }
+        System.out.println("2. Cancel Membership");
         System.out.print("Choose an option: ");
 
         int choice = sc.nextInt();
