@@ -3,6 +3,7 @@ package org.example.controller;
 import org.example.database.DatabaseConnection;
 import org.example.database.MemberDatabase;
 import org.example.model.*;
+import org.example.utils.LanguageManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,23 +26,32 @@ public class MemberController {
      */
     public void signUpMember() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Sign up as a new member");
+        LanguageManager languageManager = LanguageManager.getInstance();
 
-        String firstName = Validator.validateAlphabetsOnly("Enter first name: ");
-        String lastName = Validator.validateAlphabetsOnly("Enter last name: ");
-        String phoneNumber = Validator.validatePhoneNumber("Enter phone number: ");
-        int streetNumber = Validator.validateStreetNumber("Enter street number: ");
-        String streetName = Validator.validateAlphabetsOnly("Enter street name: ");
-        String city = Validator.validateAlphabetsOnly("Enter city: ");
-        String province = Validator.validateAlphabetsOnly("Enter province: ");
-        String zipCode = Validator.validateZipCode("Enter zip code: ");
+        System.out.println(languageManager.getMessage("sign_up"));
+
+        String firstName = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_first_name"));
+        String lastName = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_last_name"));
+        String phoneNumber = Validator.validatePhoneNumber(languageManager.getMessage("enter_phone_number"));
+        int streetNumber = Validator.validateStreetNumber(languageManager.getMessage("enter_street_number"));
+        String streetName = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_street_name"));
+        String city = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_city"));
+        String province = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_province"));
+        String zipCode = Validator.validateZipCode(languageManager.getMessage("enter_zip_code"));
 
         Address address = new Address(streetNumber, streetName, city, province, zipCode);
 
         // Prompt user to select membership type without a separate method
-        System.out.println("Select membership type:");
-        System.out.println("1. Regular - Monthly: $" + MembershipType.REGULAR.getMonthlyPrice() + ", Yearly: $" + MembershipType.REGULAR.getYearlyPrice());
-        System.out.println("2. Premium - Monthly: $" + MembershipType.PREMIUM.getMonthlyPrice() + ", Yearly: $" + MembershipType.PREMIUM.getYearlyPrice());
+
+        System.out.println(languageManager.getMessage("select_membership_type"));
+
+        System.out.println("1. " + languageManager.getMessage("membership_regular") + " - " +
+                languageManager.getMessage("membership_price_monthly", MembershipType.REGULAR.getMonthlyPrice()) + ", " +
+                languageManager.getMessage("membership_price_yearly", MembershipType.REGULAR.getYearlyPrice()));
+
+        System.out.println("2. " + languageManager.getMessage("membership_premium") + " - " +
+                languageManager.getMessage("membership_price_monthly", MembershipType.PREMIUM.getMonthlyPrice()) + ", " +
+                languageManager.getMessage("membership_price_yearly", MembershipType.PREMIUM.getYearlyPrice()));
 
         int typeChoice = sc.nextInt();
         sc.nextLine(); // Consume newline
@@ -50,9 +60,9 @@ public class MemberController {
         Membership membership = new Membership(membershipType);
 
         // Ask for payment frequency
-        System.out.println("Select payment frequency:");
-        System.out.println("1. Monthly");
-        System.out.println("2. Yearly");
+        System.out.println(languageManager.getMessage("select_payment_frequency"));
+        System.out.println("1. " + languageManager.getMessage("payment_frequency_monthly"));
+        System.out.println("2. " + languageManager.getMessage("payment_frequency_yearly"));
 
         int frequencyChoice = sc.nextInt();
         sc.nextLine(); // Consume newline
@@ -65,7 +75,7 @@ public class MemberController {
         } else if (frequencyChoice == 2) {
             initialBalance = membershipType.getYearlyPrice();
         } else {
-            System.out.println("Invalid payment frequency. Defaulting to $0 balance.");
+            System.out.println(languageManager.getMessage("invalid_frequency_message"));
             initialBalance = 0;
         }
 
@@ -84,9 +94,9 @@ public class MemberController {
 
         if (memberId != -1) {
             newMember.setMemberId(String.valueOf(memberId)); // Set the generated member ID
-            System.out.println("Signup successful! You can now log in using your Member ID : " + newMember.getMemberId());
+            System.out.println(languageManager.getMessage("signup_success") + newMember.getMemberId());
         } else {
-            System.out.println("Signup failed. Unable to add member to the database.");
+            System.out.println(languageManager.getMessage("signup_failure"));
         }
     }
 
@@ -95,21 +105,21 @@ public class MemberController {
      * @param memberID the member id to check
      */
     public void displayMemberProfile(String memberID) {
+        LanguageManager languageManager = LanguageManager.getInstance();
         Member memberProfile = findMemberByID(memberID); // Directly retrieve the Member without using viewProfile
         if (memberProfile != null) {
-            System.out.println("Profile Details:");
-            System.out.println("ID: " + memberProfile.getMemberId());
-            System.out.println("Name: " + memberProfile.getFname() + " " + memberProfile.getLname());
-            System.out.println("Street Number: " + memberProfile.getAddress().getStreetNumber());
-            System.out.println("Street Name: " + memberProfile.getAddress().getStreetName());
-            System.out.println("City: " + memberProfile.getAddress().getCity());
-            System.out.println("Province: " + memberProfile.getAddress().getProvince());
-            System.out.println("Zip Code: " + memberProfile.getAddress().getZipCode());
-            System.out.println("Membership Type: " + memberProfile.getMembershipType().getType());
-            System.out.println("Balance: $" + memberProfile.getBalance());
-            // Add any other member details you want to display here
+            System.out.println(languageManager.getMessage("profile_details"));
+            System.out.println(languageManager.getMessage("member_id") + ": " + memberProfile.getMemberId());
+            System.out.println(languageManager.getMessage("member_name") + ": " + memberProfile.getFname() + " " + memberProfile.getLname());
+            System.out.println(languageManager.getMessage("street_number") + ": " + memberProfile.getAddress().getStreetNumber());
+            System.out.println(languageManager.getMessage("street_name") + ": " + memberProfile.getAddress().getStreetName());
+            System.out.println(languageManager.getMessage("city") + ": " + memberProfile.getAddress().getCity());
+            System.out.println(languageManager.getMessage("province") + ": " + memberProfile.getAddress().getProvince());
+            System.out.println(languageManager.getMessage("zip_code") + ": " + memberProfile.getAddress().getZipCode());
+            System.out.println(languageManager.getMessage("membership_type") + ": " + memberProfile.getMembershipType().getType());
+            System.out.println(languageManager.getMessage("balance") + ": $" + memberProfile.getBalance());
         } else {
-            System.out.println("Member profile not found.");
+            System.out.println(languageManager.getMessage("member_profile_not_found"));
         }
     }
 
