@@ -123,9 +123,9 @@ public class GymSystem {
         Scanner sc = new Scanner(System.in);
 
         // Ask user for payment frequency
-        System.out.print(LanguageManager.getInstance().getMessage("enter_payment_frequency"));
-        System.out.println(LanguageManager.getInstance().getMessage("payment_frequency_monthly"));
-        System.out.println(LanguageManager.getInstance().getMessage("payment_frequency_yearly"));
+        System.out.println(LanguageManager.getInstance().getMessage("enter_payment_frequency"));
+        System.out.println("1. " + LanguageManager.getInstance().getMessage("payment_frequency_monthly"));
+        System.out.println("2. " + LanguageManager.getInstance().getMessage("payment_frequency_yearly"));
         int frequencyChoice = sc.nextInt();
 
         String frequencyType;
@@ -133,7 +133,7 @@ public class GymSystem {
             case 1 -> frequencyType = "monthlyPrice";
             case 2 -> frequencyType = "yearlyPrice";
             default -> {
-                System.out.println("Invalid payment frequency."); // Make this french
+                System.out.println(LanguageManager.getInstance().getMessage("invalid_payment_frequency"));
                 return;
             }
         }
