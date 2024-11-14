@@ -6,7 +6,7 @@ public class Validator {
     private static final Scanner sc = new Scanner(System.in);
 
     /**
-     * validates if the phone number is typed correctly
+     * Validates if the phone number is typed correctly
      * @return if the phone number is typed correctly
      */
     public static String validatePhoneNumber(String prompt) {
@@ -19,7 +19,7 @@ public class Validator {
     }
 
     /**
-     * validates if the street number only contains numbers
+     * Validates if the street number only contains numbers
      * @return if the street number only contains numbers
      */
     public static int validateStreetNumber(String prompt) {
@@ -38,7 +38,7 @@ public class Validator {
     }
 
     /**
-     * validates if the string only contains letters
+     * Validates if the string only contains letters
      * @param prompt to tell you what to enter
      * @return if the input only contains letters or not
      */
@@ -52,7 +52,7 @@ public class Validator {
     }
 
     /**
-     * validates the zip code
+     * Validates the zip code
      * @return if the zip code is valid or not
      */
     public static String validateZipCode(String prompt) {
@@ -65,7 +65,7 @@ public class Validator {
     }
 
     /**
-     * validates the information of card number
+     * Validates the information of card number
      * @return if the card number is valid or not
      */
     public static String validateCardNumber(String prompt) {
@@ -79,7 +79,7 @@ public class Validator {
     }
 
     /**
-     * validates the information of cardholder number
+     * Validates the information of cardholder number
      * @return if the cardholder number is valid or not
      */
     public static String validateCardHolderName(String prompt) {
@@ -92,7 +92,7 @@ public class Validator {
     }
 
     /**
-     * validates the information of bank name
+     * Validates the information of bank name
      * @return if the bank name is valid or not
      */
     public static String validateBankName(String prompt) {
@@ -106,7 +106,7 @@ public class Validator {
     }
 
     /**
-     * validates the information of pin
+     * Validates the information of pin
      * @return if the pin is valid or not
      */
     public static int validatePinNumber(String prompt) {
@@ -126,7 +126,7 @@ public class Validator {
     }
 
     /**
-     * validates the information of the expiry date of the credit card
+     * Validates the information of the expiry date of the credit card
      * @return if the expiry date is valid or not
      */
     public static String validateExpiryDate(String prompt) {
@@ -144,7 +144,7 @@ public class Validator {
     }
 
     /**
-     * validates the information of cvv
+     * Validates the information of cvv
      * @return if the cvv is valid or not
      */
     public static int validateCVV(String prompt) {

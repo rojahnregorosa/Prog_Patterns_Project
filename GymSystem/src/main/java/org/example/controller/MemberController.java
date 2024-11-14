@@ -294,7 +294,7 @@ public class MemberController {
 
             Notification paymentNotification = NotificationFactory.createNotification("sms",
                     languageManager.getMessage("payment_successful") + frequencyType +
-                    languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));
+                            languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));
 
             System.out.println(languageManager.getMessage("payment_successful") + frequencyType +
                     languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));

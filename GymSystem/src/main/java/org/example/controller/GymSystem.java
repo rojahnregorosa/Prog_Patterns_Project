@@ -69,7 +69,7 @@ public class GymSystem {
     }
 
     /**
-     * handles the log in for the members
+     * Handles the log in for the members
      */
     private void handleMemberLogin() {
         System.out.println(LanguageManager.getInstance().getMessage("enter_member_id"));
@@ -117,7 +117,7 @@ public class GymSystem {
     }
 
     /**
-     * handles the login for the employees
+     * Make member pay
      */
     private void initiatePayment(Member member) {
         Scanner sc = new Scanner(System.in);
@@ -144,6 +144,9 @@ public class GymSystem {
         }
     }
 
+    /**
+     * Handles employee login
+     */
     private void handleEmployeeLogin() {
         System.out.print(LanguageManager.getInstance().getMessage("enter_employee_id"));
         String employeeID = sc.nextLine();
