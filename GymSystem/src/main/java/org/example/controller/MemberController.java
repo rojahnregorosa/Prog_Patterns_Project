@@ -136,14 +136,13 @@ public class MemberController {
         Scanner sc = new Scanner(System.in); // Local scanner instance for this method
         LanguageManager languageManager = LanguageManager.getInstance();
 
-        String firstName = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_first_name"));
-        String lastName = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_last_name"));
         String phoneNumber = Validator.validatePhoneNumber(languageManager.getMessage("enter_phone_number"));
         int streetNumber = Validator.validateStreetNumber(languageManager.getMessage("enter_street_number"));
         String streetName = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_street_name"));
         String city = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_city"));
         String province = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_province"));
         String zipCode = Validator.validateZipCode(languageManager.getMessage("enter_zip_code"));
+        manageMembership(member);
 
         // Creating a new Address object with all four arguments
         Address address = new Address(streetNumber, streetName, city, province, zipCode);
@@ -285,18 +284,20 @@ public class MemberController {
 
             // Deduct balance if payment was successful
             member.setBalance(member.getBalance() - requiredAmount);
-            System.out.println(languageManager.getMessage("payment_successful") + frequencyType +
-                    languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));
+            System.out.println(languageManager.getMessage("payment_successful") + " " + frequencyType.substring(0,1).toUpperCase() +
+                    frequencyType.substring(1).toLowerCase() + " " + languageManager.getMessage("payment_of") +
+                    requiredAmount + " " + languageManager.getMessage("made"));
 
             Notification paymentNotification = NotificationFactory.createNotification("sms",
-                    languageManager.getMessage("payment_successful") + frequencyType +
-                            languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));
+                    languageManager.getMessage("payment_successful") + " " + frequencyType.substring(0,1).toUpperCase() +
+                            frequencyType.substring(1).toLowerCase() + " " + languageManager.getMessage("payment_of") +
+                            requiredAmount + " " + languageManager.getMessage("made"));
 
-            System.out.println(languageManager.getMessage("payment_successful") + frequencyType +
-                    languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));
+            System.out.println(languageManager.getMessage("payment_successful") + " " + frequencyType.substring(0,1).toUpperCase() +
+                    frequencyType.substring(1).toLowerCase() + " " + languageManager.getMessage("payment_of") +
+                    requiredAmount + " " + languageManager.getMessage("made"));
 
             addNotification(paymentNotification);
-
             notificationService.sendNotification(paymentNotification);
 
             // Add this line to prevent further code execution in case of success
