@@ -1,5 +1,7 @@
 package org.example.model;
 
 public interface Notification {
-    boolean sendNotification();
+    void sendNotification();
+    void setMessage(String message);  // New method to set a custom message
+    String getMessage();
 }
