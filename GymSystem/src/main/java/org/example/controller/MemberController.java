@@ -12,12 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static org.example.model.Member.*;
+
 public class MemberController {
-    private List<Member> members;
+    private final List<Member> members;
+    private final NotificationService notificationService;
 
     public MemberController() {
-        super();
-        members = new ArrayList<>();
+        this.members = new ArrayList<>();
+        this.notificationService = new NotificationService();
     }
 
     /**
@@ -92,6 +95,7 @@ public class MemberController {
 
     /**
      * Displays member profile
+     *
      * @param memberID the member id to check
      */
     public void displayMemberProfile(String memberID) {
@@ -115,6 +119,7 @@ public class MemberController {
 
     /**
      * Updates profile of member
+     *
      * @param member the member to be updated
      */
     public void updateMemberProfile(Member member) {
@@ -132,17 +137,16 @@ public class MemberController {
         // Creating a new Address object with all four arguments
         Address address = new Address(streetNumber, streetName, city, province, zipCode);
 
-        if (User.isPhoneNumberValid(phoneNumber)) {
-            member.setPhoneNumber(phoneNumber);
-            member.setAddress(address);
-            System.out.println("Profile updated successfully.");
-        } else {
-            System.out.println("Failed to update profile. Check the phone number format.");
-        }
+        System.out.println("Profile updated successfully.");
+
+        Notification paymentNotification = NotificationFactory.createNotification("email", "Profile updated successfully.");
+        addNotification(paymentNotification);
+        notificationService.sendNotification(paymentNotification);
     }
 
     /**
      * Manages membership of member
+     *
      * @param member to be managed
      */
     public boolean manageMembership(Member member) {
@@ -156,7 +160,7 @@ public class MemberController {
         } else {
             System.out.println("1. Upgrade to Premium");
         }
-        System.out.println("3. Cancel Membership");
+        System.out.println("2. Cancel Membership");
         System.out.print("Choose an option: ");
 
         int choice = sc.nextInt();
@@ -167,14 +171,23 @@ public class MemberController {
 
             switch (choice) {
                 case 1 -> {
-                    member.getMembershipType().setType(MembershipType.PREMIUM); // Upgrade to Premium
-                    System.out.println("Membership upgraded to Premium.");
+                    if (member.getMembershipType().getType().equals(MembershipType.PREMIUM)) {
+                        member.getMembershipType().setType(MembershipType.REGULAR);
+                        System.out.println("Membership downgraded to Regular.");
+
+                        Notification paymentNotification = NotificationFactory.createNotification("email", "Membership downgraded to Regular.");
+                        addNotification(paymentNotification);
+                        notificationService.sendNotification(paymentNotification);
+                    } else {
+                        member.getMembershipType().setType(MembershipType.PREMIUM);
+                        System.out.println("Membership upgraded to Premium.");
+
+                        Notification paymentNotification = NotificationFactory.createNotification("email", "Membership upgraded to Premium.");
+                        addNotification(paymentNotification);
+                        notificationService.sendNotification(paymentNotification);
+                    }
                 }
                 case 2 -> {
-                    member.getMembershipType().setType(MembershipType.REGULAR); // Downgrade to Regular
-                    System.out.println("Membership downgraded to Regular.");
-                }
-                case 3 -> {
                     // Remove the member from the database
                     if (memberDatabase.removeMemberByID(Integer.parseInt(member.getMemberId()))) {
                         System.out.println("Membership canceled and member removed from the database.");
@@ -196,6 +209,7 @@ public class MemberController {
 
     /**
      * Checks balance of member
+     *
      * @param member the member to check balance of
      */
     public void checkPrices(Member member) {
@@ -226,7 +240,8 @@ public class MemberController {
 
     /**
      * Makes payment based on their membership type
-     * @param memberID of the member
+     *
+     * @param memberID      of the member
      * @param frequencyType how often they pay
      * @return if payment was successful
      */
@@ -238,9 +253,9 @@ public class MemberController {
             double requiredAmount = 0;
 
             // Determine the required payment amount based on membership type and frequency
-            if ("monthly".equalsIgnoreCase(frequencyType)) {
+            if ("monthlyPrice".equalsIgnoreCase(frequencyType)) {
                 requiredAmount = membershipType.getMonthlyPrice();
-            } else if ("yearly".equalsIgnoreCase(frequencyType)) {
+            } else if ("yearlyPrice".equalsIgnoreCase(frequencyType)) {
                 requiredAmount = membershipType.getYearlyPrice();
             } else {
                 System.out.println("Invalid payment frequency: " + frequencyType);
@@ -257,6 +272,13 @@ public class MemberController {
             // Deduct balance if payment was successful
             member.setBalance(member.getBalance() - requiredAmount);
             System.out.println("Payment successful. " + frequencyType + " payment of $" + requiredAmount + " made.");
+
+            Notification paymentNotification = NotificationFactory.createNotification("sms", "Payment of $"
+                    + requiredAmount + " was successful.");
+            addNotification(paymentNotification);
+            notificationService.sendNotification(paymentNotification);
+
+            // Add this line to prevent further code execution in case of success
             return true;
         }
 
@@ -266,6 +288,7 @@ public class MemberController {
 
     /**
      * Helper method to select payment method
+     *
      * @param requiredAmount amount to pay off
      * @return type of payment
      */
@@ -291,17 +314,14 @@ public class MemberController {
                 payment = new CashPayment(cashReceived);
             }
             case 2 -> { // Credit Card payment
-
                 String cardNumber = Validator.validateCardNumber("Enter card number: ");
                 String cardHolderName = Validator.validateCardHolderName("Enter card holder name: ");
                 String expiryDate = Validator.validateExpiryDate("Enter expiration date (MM/YY): ");
                 int cvv = Validator.validateCVV("Enter CVV: ");
 
                 payment = new CreditCardPayment(cardNumber, cardHolderName, expiryDate, cvv);
-
             }
             case 3 -> { // Debit Card payment
-
                 String cardNumber = Validator.validateCardNumber("Enter card number: ");
                 String cardHolderName = Validator.validateCardHolderName("Enter card holder name: ");
                 String bankName = Validator.validateBankName("Enter bank name: ");
@@ -319,22 +339,20 @@ public class MemberController {
 
     /**
      * Views notification of member form gym system
+     *
      * @param member member to view notification
      */
     public void viewNotifications(Member member) {
-        List<Notification> notifications = member.getNotifications();
-        if (notifications.isEmpty()) {
-            System.out.println("No new notifications.");
-        } else {
-            System.out.println("Notifications:");
-            for (Notification notification : notifications) {
-                System.out.println("- " + notification);
-            }
+        System.out.println("Notifications for Member ID: " + member.getMemberId());
+
+        for (Notification notification : getNotifications()) {
+            notificationService.sendNotification(notification);  // Each notification carries its own message
         }
     }
 
     /**
      * Find member by id in database
+     *
      * @param memberID member to find
      * @return member
      */

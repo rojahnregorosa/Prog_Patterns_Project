@@ -127,13 +127,19 @@ public class GymSystem {
         System.out.println("Select payment frequency to check prices:");
         System.out.println("1. Monthly");
         System.out.println("2. Yearly");
-        String frequencyType = sc.nextLine();
-        // Call the makePayment method in MemberController to process the payment
-        switch (frequencyType) {
-            case "1" -> frequencyType = String.valueOf(member.getMembershipType().getType().getMonthlyPrice());
-            case "2" -> frequencyType = String.valueOf(member.getMembershipType().getType().getYearlyPrice());
-            default -> System.out.println("Invalid payment frequency.");
+        int frequencyChoice = sc.nextInt();
+
+        String frequencyType;
+        switch (frequencyChoice) {
+            case 1 -> frequencyType = "monthlyPrice";
+            case 2 -> frequencyType = "yearlyPrice";
+            default -> {
+                System.out.println("Invalid payment frequency.");
+                return;
+            }
         }
+
+        // Call the makePayment method with the correct frequency type
         if (!memberController.makePayment(member.getMemberId(), frequencyType)) {
             System.out.println("Payment process failed.");
         }
