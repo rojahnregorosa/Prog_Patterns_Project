@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Employee extends User{
+public class Employee extends User {
     private static int employeeIdCounter = 1;
     private String employeeId;
 

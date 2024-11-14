@@ -27,7 +27,7 @@ public class MemberDatabase {
      * @param lastName       Member's last name
      * @param phoneNumber    Member's phone number
      * @param membershipType Member's membership type
-     * @param isMonthly (monthly/yearly)
+     * @param isMonthly      (monthly/yearly)
      * @return true if the member was added successfully, false otherwise
      */
     public int addMember(String firstName, String lastName, String phoneNumber, Address address, MembershipType membershipType, boolean isMonthly) {
@@ -78,6 +78,7 @@ public class MemberDatabase {
 
     /**
      * Removes member in database by ID
+     *
      * @param memberId the member to remove
      * @return if removed successfully
      */

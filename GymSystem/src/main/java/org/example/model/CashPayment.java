@@ -14,6 +14,7 @@ public class CashPayment implements Payment {
 
     /**
      * Calculates change
+     *
      * @param amount the amount to subtract from cash received
      * @return the change
      */

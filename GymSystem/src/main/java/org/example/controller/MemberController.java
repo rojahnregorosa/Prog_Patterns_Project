@@ -148,17 +148,13 @@ public class MemberController {
         // Creating a new Address object with all four arguments
         Address address = new Address(streetNumber, streetName, city, province, zipCode);
 
-        if (User.isPhoneNumberValid(phoneNumber)) {
-            member.setPhoneNumber(phoneNumber);
-            member.setAddress(address);
-            System.out.println(languageManager.getMessage("profile_updated_successfully"));
+        member.setPhoneNumber(phoneNumber);
+        member.setAddress(address);
+        System.out.println(languageManager.getMessage("profile_updated_successfully"));
 
-            Notification paymentNotification = NotificationFactory.createNotification("email", languageManager.getMessage("profile_updated_successfully"));
-            addNotification(paymentNotification);
-            notificationService.sendNotification(paymentNotification);
-        } else {
-            System.out.println(languageManager.getMessage("profile_update_failed"));
-        }
+        Notification paymentNotification = NotificationFactory.createNotification("email", languageManager.getMessage("profile_updated_successfully"));
+        addNotification(paymentNotification);
+        notificationService.sendNotification(paymentNotification);
     }
 
     /**
@@ -294,7 +290,7 @@ public class MemberController {
 
             Notification paymentNotification = NotificationFactory.createNotification("sms",
                     languageManager.getMessage("payment_successful") + frequencyType +
-                    languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));
+                            languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));
 
             System.out.println(languageManager.getMessage("payment_successful") + frequencyType +
                     languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));

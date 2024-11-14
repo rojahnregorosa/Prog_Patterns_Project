@@ -14,6 +14,7 @@ public class Membership {
 
     /**
      * Chooses price depending on the membership type
+     *
      * @param frequencyType how frequent they want to pay
      * @return the price
      */

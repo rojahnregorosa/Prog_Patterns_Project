@@ -1,6 +1,6 @@
 package org.example.model;
 
-public class CreditCardPayment implements Payment{
+public class CreditCardPayment implements Payment {
     private String cardNumber;
     private String cardHolderName;
     private String expiryDate;

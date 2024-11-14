@@ -26,7 +26,8 @@ public class EmployeeController {
     }
 
     /**
-     * finds the employee by their id
+     * Finds the employee by their id
+     *
      * @param employeeID to search
      * @return employee with that id
      */
@@ -40,7 +41,7 @@ public class EmployeeController {
     }
 
     /**
-     * adds member to the system
+     * Adds member to the system
      */
     public void promptAddMember() {
         MemberController memberController = new MemberController();
@@ -48,7 +49,8 @@ public class EmployeeController {
     }
 
     /**
-     * helper method to add member
+     * Helper method to add member
+     *
      * @param member to add
      * @return added member
      */
@@ -61,7 +63,7 @@ public class EmployeeController {
     }
 
     /**
-     * deletes a member from the system
+     * Deletes a member from the system
      */
     public void promptRemoveMember() {
         Scanner scanner = new Scanner(System.in);
@@ -78,7 +80,8 @@ public class EmployeeController {
     }
 
     /**
-     * helper method to remove member
+     * Helper method to remove member
+     *
      * @param memberID to find to remove
      * @return removed member
      */
@@ -102,6 +105,10 @@ public class EmployeeController {
         }
     }
 
+    /**
+     * Update member
+     *
+     */
     public void promptUpdateMember() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter Member ID: ");
@@ -114,8 +121,9 @@ public class EmployeeController {
     }
 
     /**
-     * helps main method update member
-     * @param memberID to find
+     * Helps main method update member
+     *
+     * @param memberID      to find
      * @param updatedMember to update
      */
     public void updateMember(String memberID, Member updatedMember) {
@@ -126,7 +134,8 @@ public class EmployeeController {
     }
 
     /**
-     * gets the membership type from the input of the user
+     * Gets the membership type from the input of the user
+     *
      * @return the membership type
      */
     public MembershipType getMembershipTypeFromInput() {
