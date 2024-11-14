@@ -10,6 +10,7 @@ public class DatabaseConnection {
 
     /**
      * Establishes a connection to the SQLite database
+     *
      * @return Connection instance
      */
     public static Connection connect() {

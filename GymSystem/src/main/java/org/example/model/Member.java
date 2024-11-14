@@ -30,8 +30,9 @@ public class Member extends User {
     }
 
     /**
+     * Adds notification
      *
-     * @param notification
+     * @param notification the new notification
      */
     public static void addNotification(Notification notification) {
         notifications.add(notification);
