@@ -22,15 +22,14 @@ public class GymSystem {
      */
     public void start() {
         chooseLanguage();
-        System.out.println(LanguageManager.getInstance().getMessage("welcome"));
         boolean running = true;
 
         while (running) {
             System.out.println(LanguageManager.getInstance().getMessage("select_option"));
-            System.out.println(LanguageManager.getInstance().getMessage("login_member"));
-            System.out.println(LanguageManager.getInstance().getMessage("login_employee"));
-            System.out.println(LanguageManager.getInstance().getMessage("sign_up"));
-            System.out.println(LanguageManager.getInstance().getMessage("exit"));
+            System.out.println("1. " + LanguageManager.getInstance().getMessage("login_member"));
+            System.out.println("2. " + LanguageManager.getInstance().getMessage("login_employee"));
+            System.out.println("3. " + LanguageManager.getInstance().getMessage("sign_up"));
+            System.out.println("4. " + LanguageManager.getInstance().getMessage("exit"));
 
             int choice = sc.nextInt();
             sc.nextLine();
@@ -82,14 +81,14 @@ public class GymSystem {
             boolean memberSession = true;
 
             while (memberSession) {
-                System.out.println("\nMember Options");
-                System.out.println("1. View Profile");
-                System.out.println("2. Update Profile");
-                System.out.println("3. Manage Membership");
-                System.out.println("4. Check Prices");
-                System.out.println("5. Make Payment");
-                System.out.println("6. View Notifications");
-                System.out.println("7. Log out.");
+                System.out.println("\n" + LanguageManager.getInstance().getMessage("member_options"));
+                System.out.println("1. " + LanguageManager.getInstance().getMessage("view_profile"));
+                System.out.println("2. " + LanguageManager.getInstance().getMessage("update_profile"));
+                System.out.println("3. " + LanguageManager.getInstance().getMessage("manage_membership"));
+                System.out.println("4. " + LanguageManager.getInstance().getMessage("check_prices"));
+                System.out.println("5. " + LanguageManager.getInstance().getMessage("make_payment"));
+                System.out.println("6. " + LanguageManager.getInstance().getMessage("view_notifications"));
+                System.out.println("7. " + LanguageManager.getInstance().getMessage("log_out"));
 
                 int choice = sc.nextInt();
                 sc.nextLine(); // Consume newline
@@ -107,7 +106,7 @@ public class GymSystem {
                     case 6 -> memberController.viewNotifications(member);
                     case 7 -> {
                         memberSession = false;
-                        System.out.println("Logging out...");
+                        System.out.println(LanguageManager.getInstance().getMessage("logging_out"));
                     }
                     default -> System.out.println(LanguageManager.getInstance().getMessage("invalid_choice"));
                 }
@@ -123,29 +122,29 @@ public class GymSystem {
     private void initiatePayment(Member member) {
         Scanner sc = new Scanner(System.in);
 
-        System.out.print("Enter payment frequency (monthly/yearly): ");
+        System.out.print(LanguageManager.getInstance().getMessage("enter_payment_frequency"));
         String frequencyType = sc.nextLine();
         // Call the makePayment method in MemberController to process the payment
         if (!memberController.makePayment(member.getMemberId(), frequencyType)) {
-            System.out.println("Payment process failed.");
+            System.out.println(LanguageManager.getInstance().getMessage("payment_failed"));
         }
     }
 
     private void handleEmployeeLogin() {
-        System.out.print("Enter Employee ID: ");
+        System.out.print(LanguageManager.getInstance().getMessage("enter_employee_id"));
         String employeeID = sc.nextLine();
         Employee employee = employeeController.findEmployeeByID(employeeID);
 
         if (employee != null) {
-            System.out.println("Login successful! Welcome, " + employee.getFname() + " " + employee.getLname());
+            System.out.println(LanguageManager.getInstance().getMessage("login_success") + " " + employee.getFname() + " " + employee.getLname());
             boolean employeeSession = true;
 
             while (employeeSession) {
-                System.out.println("\nEmployee Options:");
-                System.out.println("1. Add Member");
-                System.out.println("2. Update Member");
-                System.out.println("3. Remove Member");
-                System.out.println("4. Logout");
+                System.out.println("\n" + LanguageManager.getInstance().getMessage("employee_options"));
+                System.out.println("1. " + LanguageManager.getInstance().getMessage("add_member"));
+                System.out.println("2. " + LanguageManager.getInstance().getMessage("update_member"));
+                System.out.println("3. " + LanguageManager.getInstance().getMessage("remove_member"));
+                System.out.println("4. " + LanguageManager.getInstance().getMessage("log_out"));
 
                 int choice = sc.nextInt();
                 sc.nextLine(); // Consume newline
@@ -156,13 +155,13 @@ public class GymSystem {
                     case 3 -> employeeController.promptRemoveMember();
                     case 4 -> {
                         employeeSession = false;
-                        System.out.println("Logging out...");
+                        System.out.println(LanguageManager.getInstance().getMessage("logging_out"));
                     }
-                    default -> System.out.println("Invalid choice. Please try again.");
+                    default -> System.out.println(LanguageManager.getInstance().getMessage("invalid_choice"));
                 }
             }
         } else {
-            System.out.println("Employee not found. Please check your ID and try again.");
+            System.out.println(LanguageManager.getInstance().getMessage("employee_not_found"));
         }
     }
 }
