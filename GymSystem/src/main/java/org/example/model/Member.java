@@ -26,7 +26,7 @@ public class Member extends User {
         this.memberId = String.valueOf(memberIdCounter++);
         this.membershipType = membershipType;
         this.balance = balance;
-        this.notifications = new ArrayList<>();
+        notifications = new ArrayList<>();
     }
 
     /**
