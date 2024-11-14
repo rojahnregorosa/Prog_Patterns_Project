@@ -129,15 +129,16 @@ public class MemberController {
      */
     public void updateMemberProfile(Member member) {
         Scanner sc = new Scanner(System.in); // Local scanner instance for this method
+        LanguageManager languageManager = LanguageManager.getInstance();
 
-        String firstName = Validator.validateAlphabetsOnly("Enter first name: ");
-        String lastName = Validator.validateAlphabetsOnly("Enter last name: ");
-        String phoneNumber = Validator.validatePhoneNumber("Enter phone number: ");
-        int streetNumber = Validator.validateStreetNumber("Enter street number: ");
-        String streetName = Validator.validateAlphabetsOnly("Enter street name: ");
-        String city = Validator.validateAlphabetsOnly("Enter city: ");
-        String province = Validator.validateAlphabetsOnly("Enter province: ");
-        String zipCode = Validator.validateZipCode("Enter zip code: ");
+        String firstName = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_first_name"));
+        String lastName = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_last_name"));
+        String phoneNumber = Validator.validatePhoneNumber(languageManager.getMessage("enter_phone_number"));
+        int streetNumber = Validator.validateStreetNumber(languageManager.getMessage("enter_street_number"));
+        String streetName = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_street_name"));
+        String city = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_city"));
+        String province = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_province"));
+        String zipCode = Validator.validateZipCode(languageManager.getMessage("enter_zip_code"));
 
         // Creating a new Address object with all four arguments
         Address address = new Address(streetNumber, streetName, city, province, zipCode);
@@ -145,9 +146,9 @@ public class MemberController {
         if (User.isPhoneNumberValid(phoneNumber)) {
             member.setPhoneNumber(phoneNumber);
             member.setAddress(address);
-            System.out.println("Profile updated successfully.");
+            System.out.println(languageManager.getMessage("profile_updated_successfully"));
         } else {
-            System.out.println("Failed to update profile. Check the phone number format.");
+            System.out.println(languageManager.getMessage("profile_update_failed"));
         }
     }
 
@@ -157,17 +158,17 @@ public class MemberController {
      */
     public boolean manageMembership(Member member) {
         Scanner sc = new Scanner(System.in); // Local scanner for input
+        LanguageManager languageManager = LanguageManager.getInstance();
 
-
-        System.out.println("Current Membership Type: " + member.getMembershipType().getType());
+        System.out.println(languageManager.getMessage("current_membership_type") + ": " + member.getMembershipType().getType());
 
         if (member.getMembershipType().getType().equals(MembershipType.PREMIUM)) {
-            System.out.println("1. Downgrade to Regular");
+            System.out.println("1. " + languageManager.getMessage("downgrade_to_regular"));
         } else {
-            System.out.println("1. Upgrade to Premium");
+            System.out.println("1. " + languageManager.getMessage("upgrade_to_premium"));
         }
-        System.out.println("3. Cancel Membership");
-        System.out.print("Choose an option: ");
+        System.out.println("2. " + languageManager.getMessage("cancel_membership"));
+        System.out.print(languageManager.getMessage("choose_option"));
 
         int choice = sc.nextInt();
         sc.nextLine(); // Consume newline
@@ -177,28 +178,29 @@ public class MemberController {
 
             switch (choice) {
                 case 1 -> {
-                    member.getMembershipType().setType(MembershipType.PREMIUM); // Upgrade to Premium
-                    System.out.println("Membership upgraded to Premium.");
+                    if (member.getMembershipType().getType().equals(MembershipType.PREMIUM)) {
+                        member.getMembershipType().setType(MembershipType.REGULAR); // Downgrade to Regular
+                        System.out.println(languageManager.getMessage("membership_downgraded"));
+                    } else {
+                        member.getMembershipType().setType(MembershipType.PREMIUM); // Upgrade to Premium
+                        System.out.println(languageManager.getMessage("membership_upgraded"));
+                    }
                 }
                 case 2 -> {
-                    member.getMembershipType().setType(MembershipType.REGULAR); // Downgrade to Regular
-                    System.out.println("Membership downgraded to Regular.");
-                }
-                case 3 -> {
                     // Remove the member from the database
                     if (memberDatabase.removeMemberByID(Integer.parseInt(member.getMemberId()))) {
-                        System.out.println("Membership canceled and member removed from the database.");
+                        System.out.println(languageManager.getMessage("membership_canceled"));
                         return true; // Return true to indicate the session should end
                     } else {
-                        System.out.println("Failed to cancel membership or member not found.");
+                        System.out.println(languageManager.getMessage("cancel_membership_failed"));
                     }
                 }
                 default -> {
-                    System.out.println("Invalid choice.");
+                    System.out.println(languageManager.getMessage("invalid_choice"));
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error accessing the database: " + e.getMessage());
+            System.out.println(languageManager.getMessage("database_error") + ": " + e.getMessage());
         }
         return false; // Return false to continue the session
     }
@@ -211,11 +213,12 @@ public class MemberController {
     public void checkPrices(Member member) {
         MembershipType membershipType = member.getMembershipType().getType(); // Get the type (REGULAR or PREMIUM)
         Scanner sc = new Scanner(System.in);
+        LanguageManager languageManager = LanguageManager.getInstance();
 
         // Ask user for payment frequency
-        System.out.println("Select payment frequency to check prices:");
-        System.out.println("1. Monthly");
-        System.out.println("2. Yearly");
+        System.out.println(languageManager.getMessage("select_payment_frequency_check"));
+        System.out.println("1. " + languageManager.getMessage("payment_frequency_monthly"));
+        System.out.println("2. " + languageManager.getMessage("payment_frequency_yearly"));
 
         int frequencyChoice = sc.nextInt();
         sc.nextLine(); // Consume newline
@@ -226,13 +229,12 @@ public class MemberController {
         } else if (frequencyChoice == 2) {
             prices = membershipType.getYearlyPrice();
         } else {
-            System.out.println("Invalid payment frequency.");
+            System.out.println(languageManager.getMessage("invalid_payment_frequency"));
             return;
         }
 
-        System.out.println("Prices: $" + prices);
+        System.out.println(languageManager.getMessage("prices") + ": $" + prices);
     }
-
 
     /**
      * Makes payment based on their membership type
@@ -241,6 +243,7 @@ public class MemberController {
      * @return if payment was successful
      */
     public boolean makePayment(String memberID, String frequencyType) {
+        LanguageManager languageManager = LanguageManager.getInstance();
         Member member = findMemberByID(memberID);
 
         if (member != null) {
@@ -253,24 +256,28 @@ public class MemberController {
             } else if ("yearly".equalsIgnoreCase(frequencyType)) {
                 requiredAmount = membershipType.getYearlyPrice();
             } else {
-                System.out.println("Invalid payment frequency: " + frequencyType);
+                System.out.println(languageManager.getMessage("invalid_payment_frequency") + ": " + frequencyType);
                 return false;
             }
 
             // Call the helper method to select and process payment method
             Payment payment = selectPaymentMethod(requiredAmount);
             if (payment == null) {
-                System.out.println("Payment process failed.");
+                System.out.println(languageManager.getMessage("payment_process_failed"));
                 return false;
             }
 
             // Deduct balance if payment was successful
             member.setBalance(member.getBalance() - requiredAmount);
-            System.out.println("Payment successful. " + frequencyType + " payment of $" + requiredAmount + " made.");
+
+            System.out.println(languageManager.getMessage("payment_successful") + " " + frequencyType + " " +
+                    languageManager.getMessage("payment_of") + " $" + requiredAmount + " " +
+                    languageManager.getMessage("made"));
+
             return true;
         }
 
-        System.out.println("Member not found.");
+        System.out.println(languageManager.getMessage("member_not_found"));
         return false;
     }
 
@@ -281,12 +288,13 @@ public class MemberController {
      */
     private Payment selectPaymentMethod(double requiredAmount) {
         Scanner sc = new Scanner(System.in);
+        LanguageManager languageManager = LanguageManager.getInstance();
 
-        System.out.println("Choose payment method:");
-        System.out.println("1. Cash");
-        System.out.println("2. Credit Card");
-        System.out.println("3. Debit Card");
-        System.out.print("Enter choice: ");
+        System.out.println(languageManager.getMessage("choose_payment_method"));
+        System.out.println("1. " + languageManager.getMessage("cash"));
+        System.out.println("2. " + languageManager.getMessage("credit_card"));
+        System.out.println("3. " + languageManager.getMessage("debit_card"));
+        System.out.print(languageManager.getMessage("enter_choice"));
         int paymentChoice = sc.nextInt();
         sc.nextLine(); // Consume newline
 
@@ -294,7 +302,7 @@ public class MemberController {
 
         switch (paymentChoice) {
             case 1 -> { // Cash payment
-                System.out.print("Enter cash received: $");
+                System.out.print(languageManager.getMessage("enter_cash_received"));
                 double cashReceived = sc.nextDouble();
                 sc.nextLine(); // Consume newline
 
@@ -302,25 +310,25 @@ public class MemberController {
             }
             case 2 -> { // Credit Card payment
 
-                String cardNumber = Validator.validateCardNumber("Enter card number: ");
-                String cardHolderName = Validator.validateCardHolderName("Enter card holder name: ");
-                String expiryDate = Validator.validateExpiryDate("Enter expiration date (MM/YY): ");
-                int cvv = Validator.validateCVV("Enter CVV: ");
+                String cardNumber = Validator.validateCardNumber(languageManager.getMessage("enter_card_number"));
+                String cardHolderName = Validator.validateCardHolderName(languageManager.getMessage("enter_card_holder_name"));
+                String expiryDate = Validator.validateExpiryDate(languageManager.getMessage("enter_expiration_date"));
+                int cvv = Validator.validateCVV(languageManager.getMessage("enter_cvv"));
 
                 payment = new CreditCardPayment(cardNumber, cardHolderName, expiryDate, cvv);
 
             }
             case 3 -> { // Debit Card payment
 
-                String cardNumber = Validator.validateCardNumber("Enter card number: ");
-                String cardHolderName = Validator.validateCardHolderName("Enter card holder name: ");
-                String bankName = Validator.validateBankName("Enter bank name: ");
-                int pin = Validator.validatePinNumber("Enter PIN: ");
+                String cardNumber = Validator.validateCardNumber(languageManager.getMessage("enter_card_number"));
+                String cardHolderName = Validator.validateCardHolderName(languageManager.getMessage("enter_card_holder_name"));
+                String bankName = Validator.validateBankName(languageManager.getMessage("enter_bank_name"));
+                int pin = Validator.validatePinNumber(languageManager.getMessage("enter_pin"));
 
                 payment = new DebitCardPayment(cardNumber, cardHolderName, bankName, pin);
             }
             default -> {
-                System.out.println("Invalid payment method selected.");
+                System.out.println(languageManager.getMessage("invalid_payment_method"));
                 return null;
             }
         }
@@ -333,10 +341,12 @@ public class MemberController {
      */
     public void viewNotifications(Member member) {
         List<Notification> notifications = member.getNotifications();
+        LanguageManager languageManager = LanguageManager.getInstance();
+
         if (notifications.isEmpty()) {
-            System.out.println("No new notifications.");
+            System.out.println(languageManager.getMessage("no_new_notifications"));
         } else {
-            System.out.println("Notifications:");
+            System.out.println(languageManager.getMessage("notifications"));
             for (Notification notification : notifications) {
                 System.out.println("- " + notification);
             }
