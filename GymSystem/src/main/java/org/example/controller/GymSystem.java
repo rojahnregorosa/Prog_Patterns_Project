@@ -122,9 +122,23 @@ public class GymSystem {
     private void initiatePayment(Member member) {
         Scanner sc = new Scanner(System.in);
 
+        // Ask user for payment frequency
         System.out.print(LanguageManager.getInstance().getMessage("enter_payment_frequency"));
-        String frequencyType = sc.nextLine();
-        // Call the makePayment method in MemberController to process the payment
+        System.out.println(LanguageManager.getInstance().getMessage("payment_frequency_monthly"));
+        System.out.println(LanguageManager.getInstance().getMessage("payment_frequency_yearly"));
+        int frequencyChoice = sc.nextInt();
+
+        String frequencyType;
+        switch (frequencyChoice) {
+            case 1 -> frequencyType = "monthlyPrice";
+            case 2 -> frequencyType = "yearlyPrice";
+            default -> {
+                System.out.println("Invalid payment frequency."); // Make this french
+                return;
+            }
+        }
+
+        // Call the makePayment method with the correct frequency type
         if (!memberController.makePayment(member.getMemberId(), frequencyType)) {
             System.out.println(LanguageManager.getInstance().getMessage("payment_failed"));
         }

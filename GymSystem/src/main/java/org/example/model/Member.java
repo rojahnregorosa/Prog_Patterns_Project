@@ -13,7 +13,13 @@ public class Member extends User {
     protected String memberId;
     protected Membership membershipType;
     protected double balance; //how much they have to pay
-    private List<Notification> notifications;
+    /**
+     * -- GETTER --
+     *
+     * @return
+     */
+    @Getter
+    private static List<Notification> notifications;
 
     public Member(String fname, String lname, Address address, String phoneNumber, Membership membershipType, double balance) {
         super(fname, lname, address, phoneNumber);
@@ -25,17 +31,9 @@ public class Member extends User {
 
     /**
      *
-     * @return
-     */
-    public List<Notification> getNotifications() {
-        return notifications;
-    }
-
-    /**
-     *
      * @param notification
      */
-    public void addNotification(Notification notification) {
+    public static void addNotification(Notification notification) {
         notifications.add(notification);
     }
 }

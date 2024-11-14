@@ -13,12 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static org.example.model.Member.*;
+
 public class MemberController {
-    private List<Member> members;
+    private final List<Member> members;
+    private final NotificationService notificationService;
 
     public MemberController() {
-        super();
-        members = new ArrayList<>();
+        this.members = new ArrayList<>();
+        this.notificationService = new NotificationService();
     }
 
     /**
@@ -102,6 +105,7 @@ public class MemberController {
 
     /**
      * Displays member profile
+     *
      * @param memberID the member id to check
      */
     public void displayMemberProfile(String memberID) {
@@ -125,6 +129,7 @@ public class MemberController {
 
     /**
      * Updates profile of member
+     *
      * @param member the member to be updated
      */
     public void updateMemberProfile(Member member) {
@@ -147,6 +152,10 @@ public class MemberController {
             member.setPhoneNumber(phoneNumber);
             member.setAddress(address);
             System.out.println(languageManager.getMessage("profile_updated_successfully"));
+
+            Notification paymentNotification = NotificationFactory.createNotification("email", "Profile updated successfully.");
+            addNotification(paymentNotification);
+            notificationService.sendNotification(paymentNotification);
         } else {
             System.out.println(languageManager.getMessage("profile_update_failed"));
         }
@@ -154,6 +163,7 @@ public class MemberController {
 
     /**
      * Manages membership of member
+     *
      * @param member to be managed
      */
     public boolean manageMembership(Member member) {
@@ -181,9 +191,17 @@ public class MemberController {
                     if (member.getMembershipType().getType().equals(MembershipType.PREMIUM)) {
                         member.getMembershipType().setType(MembershipType.REGULAR); // Downgrade to Regular
                         System.out.println(languageManager.getMessage("membership_downgraded"));
+
+                        Notification paymentNotification = NotificationFactory.createNotification("email", "Membership downgraded to Regular.");
+                        addNotification(paymentNotification);
+                        notificationService.sendNotification(paymentNotification);
                     } else {
                         member.getMembershipType().setType(MembershipType.PREMIUM); // Upgrade to Premium
                         System.out.println(languageManager.getMessage("membership_upgraded"));
+
+                        Notification paymentNotification = NotificationFactory.createNotification("email", "Membership upgraded to Premium.");
+                        addNotification(paymentNotification);
+                        notificationService.sendNotification(paymentNotification);
                     }
                 }
                 case 2 -> {
@@ -208,6 +226,7 @@ public class MemberController {
 
     /**
      * Checks balance of member
+     *
      * @param member the member to check balance of
      */
     public void checkPrices(Member member) {
@@ -238,7 +257,8 @@ public class MemberController {
 
     /**
      * Makes payment based on their membership type
-     * @param memberID of the member
+     *
+     * @param memberID      of the member
      * @param frequencyType how often they pay
      * @return if payment was successful
      */
@@ -251,9 +271,9 @@ public class MemberController {
             double requiredAmount = 0;
 
             // Determine the required payment amount based on membership type and frequency
-            if ("monthly".equalsIgnoreCase(frequencyType)) {
+            if ("monthlyPrice".equalsIgnoreCase(frequencyType)) {
                 requiredAmount = membershipType.getMonthlyPrice();
-            } else if ("yearly".equalsIgnoreCase(frequencyType)) {
+            } else if ("yearlyPrice".equalsIgnoreCase(frequencyType)) {
                 requiredAmount = membershipType.getYearlyPrice();
             } else {
                 System.out.println(languageManager.getMessage("invalid_payment_frequency") + ": " + frequencyType);
@@ -269,11 +289,14 @@ public class MemberController {
 
             // Deduct balance if payment was successful
             member.setBalance(member.getBalance() - requiredAmount);
+            System.out.println("Payment successful. " + frequencyType + " payment of $" + requiredAmount + " made.");
 
-            System.out.println(languageManager.getMessage("payment_successful") + " " + frequencyType + " " +
-                    languageManager.getMessage("payment_of") + " $" + requiredAmount + " " +
-                    languageManager.getMessage("made"));
+            Notification paymentNotification = NotificationFactory.createNotification("sms", "Payment of $"
+                    + requiredAmount + " was successful.");
+            addNotification(paymentNotification);
+            notificationService.sendNotification(paymentNotification);
 
+            // Add this line to prevent further code execution in case of success
             return true;
         }
 
@@ -283,6 +306,7 @@ public class MemberController {
 
     /**
      * Helper method to select payment method
+     *
      * @param requiredAmount amount to pay off
      * @return type of payment
      */
@@ -309,17 +333,14 @@ public class MemberController {
                 payment = new CashPayment(cashReceived);
             }
             case 2 -> { // Credit Card payment
-
                 String cardNumber = Validator.validateCardNumber(languageManager.getMessage("enter_card_number"));
                 String cardHolderName = Validator.validateCardHolderName(languageManager.getMessage("enter_card_holder_name"));
                 String expiryDate = Validator.validateExpiryDate(languageManager.getMessage("enter_expiration_date"));
                 int cvv = Validator.validateCVV(languageManager.getMessage("enter_cvv"));
 
                 payment = new CreditCardPayment(cardNumber, cardHolderName, expiryDate, cvv);
-
             }
             case 3 -> { // Debit Card payment
-
                 String cardNumber = Validator.validateCardNumber(languageManager.getMessage("enter_card_number"));
                 String cardHolderName = Validator.validateCardHolderName(languageManager.getMessage("enter_card_holder_name"));
                 String bankName = Validator.validateBankName(languageManager.getMessage("enter_bank_name"));
@@ -337,24 +358,27 @@ public class MemberController {
 
     /**
      * Views notification of member form gym system
+     *
      * @param member member to view notification
      */
     public void viewNotifications(Member member) {
-        List<Notification> notifications = member.getNotifications();
+        System.out.println("Notifications for Member ID: " + member.getMemberId());
+        List<Notification> notifications = getNotifications();
         LanguageManager languageManager = LanguageManager.getInstance();
 
         if (notifications.isEmpty()) {
             System.out.println(languageManager.getMessage("no_new_notifications"));
         } else {
             System.out.println(languageManager.getMessage("notifications"));
-            for (Notification notification : notifications) {
-                System.out.println("- " + notification);
+            for (Notification notification : getNotifications()) {
+                notificationService.sendNotification(notification);
             }
         }
     }
 
     /**
      * Find member by id in database
+     *
      * @param memberID member to find
      * @return member
      */
