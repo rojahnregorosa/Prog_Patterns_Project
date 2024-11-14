@@ -153,7 +153,7 @@ public class MemberController {
             member.setAddress(address);
             System.out.println(languageManager.getMessage("profile_updated_successfully"));
 
-            Notification paymentNotification = NotificationFactory.createNotification("email", "Profile updated successfully.");
+            Notification paymentNotification = NotificationFactory.createNotification("email", languageManager.getMessage("profile_updated_successfully"));
             addNotification(paymentNotification);
             notificationService.sendNotification(paymentNotification);
         } else {
@@ -192,14 +192,14 @@ public class MemberController {
                         member.getMembershipType().setType(MembershipType.REGULAR); // Downgrade to Regular
                         System.out.println(languageManager.getMessage("membership_downgraded"));
 
-                        Notification paymentNotification = NotificationFactory.createNotification("email", "Membership downgraded to Regular.");
+                        Notification paymentNotification = NotificationFactory.createNotification("email", languageManager.getMessage("membership_downgraded"));
                         addNotification(paymentNotification);
                         notificationService.sendNotification(paymentNotification);
                     } else {
                         member.getMembershipType().setType(MembershipType.PREMIUM); // Upgrade to Premium
                         System.out.println(languageManager.getMessage("membership_upgraded"));
 
-                        Notification paymentNotification = NotificationFactory.createNotification("email", "Membership upgraded to Premium.");
+                        Notification paymentNotification = NotificationFactory.createNotification("email", languageManager.getMessage("membership_upgraded"));
                         addNotification(paymentNotification);
                         notificationService.sendNotification(paymentNotification);
                     }
@@ -289,11 +289,18 @@ public class MemberController {
 
             // Deduct balance if payment was successful
             member.setBalance(member.getBalance() - requiredAmount);
-            System.out.println("Payment successful. " + frequencyType + " payment of $" + requiredAmount + " made.");
+            System.out.println(languageManager.getMessage("payment_successful") + frequencyType +
+                    languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));
 
-            Notification paymentNotification = NotificationFactory.createNotification("sms", "Payment of $"
-                    + requiredAmount + " was successful.");
+            Notification paymentNotification = NotificationFactory.createNotification("sms",
+                    languageManager.getMessage("payment_successful") + frequencyType +
+                    languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));
+
+            System.out.println(languageManager.getMessage("payment_successful") + frequencyType +
+                    languageManager.getMessage("payment_of") + requiredAmount + languageManager.getMessage("made"));
+
             addNotification(paymentNotification);
+
             notificationService.sendNotification(paymentNotification);
 
             // Add this line to prevent further code execution in case of success
