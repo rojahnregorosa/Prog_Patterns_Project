@@ -13,11 +13,7 @@ public class Member extends User {
     protected String memberId;
     protected Membership membershipType;
     protected double balance; //how much they have to pay
-    /**
-     * -- GETTER --
-     *
-     * @return
-     */
+
     @Getter
     private static List<Notification> notifications;
 

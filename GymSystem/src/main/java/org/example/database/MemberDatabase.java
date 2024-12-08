@@ -77,6 +77,58 @@ public class MemberDatabase {
     }
 
     /**
+     * Updates the member's information in the database.
+     *
+     * @param memberId       Member's ID to update
+     * @param firstName      Updated first name
+     * @param lastName       Updated last name
+     * @param phoneNumber    Updated phone number
+     * @param address        Updated address
+     * @param membershipType Updated membership type
+     * @param frequency      Updated membership frequency (monthly or yearly)
+     * @return true if the member was updated successfully, false otherwise
+     */
+    public boolean updateMember(int memberId, String firstName, String lastName, String phoneNumber, Address address, MembershipType membershipType, String frequency) {
+        boolean success = false;
+
+        try {
+            // Step 1: Update the address if necessary
+            String updateAddressSQL = "UPDATE Addresses SET street_number = ?, street_name = ?, city = ?, province = ?, zip_code = ? WHERE id = (SELECT address_id FROM Members WHERE id = ?)";
+            try (PreparedStatement addressStmt = connection.prepareStatement(updateAddressSQL)) {
+                addressStmt.setInt(1, address.getStreetNumber());
+                addressStmt.setString(2, address.getStreetName());
+                addressStmt.setString(3, address.getCity());
+                addressStmt.setString(4, address.getProvince());
+                addressStmt.setString(5, address.getZipCode());
+                addressStmt.setInt(6, memberId);
+
+                int addressUpdated = addressStmt.executeUpdate();
+
+                // Step 2: Update the member's information
+                double balance = membershipType.getPrice(frequency); // Use frequency here
+                String updateMemberSQL = "UPDATE Members SET first_name = ?, last_name = ?, phone_number = ?, membership_type = ?, balance = ? WHERE id = ?";
+                try (PreparedStatement memberStmt = connection.prepareStatement(updateMemberSQL)) {
+                    memberStmt.setString(1, firstName);
+                    memberStmt.setString(2, lastName);
+                    memberStmt.setString(3, phoneNumber);
+                    memberStmt.setString(4, membershipType.name());
+                    memberStmt.setDouble(5, balance);
+                    memberStmt.setInt(6, memberId);
+
+                    int memberUpdated = memberStmt.executeUpdate();
+
+                    // Return true if both address and member are updated
+                    success = addressUpdated > 0 && memberUpdated > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating member in the database: " + e.getMessage());
+        }
+        return success; // Return true if update is successful, false otherwise
+    }
+
+
+    /**
      * Removes member in database by ID
      *
      * @param memberId the member to remove
