@@ -391,7 +391,6 @@ public class MemberController {
      * @param member member to view notification
      */
     public void viewNotifications(Member member) {
-        System.out.println("Notifications for Member ID: " + member.getMemberId());
         List<Notification> notifications = getNotifications();
         LanguageManager languageManager = LanguageManager.getInstance();
 
