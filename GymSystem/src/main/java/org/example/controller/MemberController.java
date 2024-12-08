@@ -115,6 +115,7 @@ public class MemberController {
             System.out.println(languageManager.getMessage("profile_details"));
             System.out.println(languageManager.getMessage("member_id") + ": " + memberProfile.getMemberId());
             System.out.println(languageManager.getMessage("member_name") + ": " + memberProfile.getFname() + " " + memberProfile.getLname());
+            System.out.println(languageManager.getMessage("phone_number") + ": " + memberProfile.getPhoneNumber());
             System.out.println(languageManager.getMessage("street_number") + ": " + memberProfile.getAddress().getStreetNumber());
             System.out.println(languageManager.getMessage("street_name") + ": " + memberProfile.getAddress().getStreetName());
             System.out.println(languageManager.getMessage("city") + ": " + memberProfile.getAddress().getCity());
@@ -136,6 +137,7 @@ public class MemberController {
         Scanner sc = new Scanner(System.in); // Local scanner instance for this method
         LanguageManager languageManager = LanguageManager.getInstance();
 
+        String frequency = Validator.validateFrequency(languageManager.getMessage("enter_membership_frequency"));
         String phoneNumber = Validator.validatePhoneNumber(languageManager.getMessage("enter_phone_number"));
         int streetNumber = Validator.validateStreetNumber(languageManager.getMessage("enter_street_number"));
         String streetName = Validator.validateAlphabetsOnly(languageManager.getMessage("enter_street_name"));
@@ -149,7 +151,31 @@ public class MemberController {
 
         member.setPhoneNumber(phoneNumber);
         member.setAddress(address);
-        System.out.println(languageManager.getMessage("profile_updated_successfully"));
+
+        Membership membership = member.getMembershipType(); // Get the current membership object
+
+        // Use the frequency input here to calculate the price
+        double price = membership.getPrice(frequency);
+
+        // Persist the updates in the database using MemberDatabase
+        try {
+            MemberDatabase memberDatabase = MemberDatabase.getInstance();
+            boolean isUpdated = memberDatabase.updateMember(Integer.parseInt(member.getMemberId()),
+                    member.getFname(),
+                    member.getLname(),
+                    member.getPhoneNumber(),
+                    member.getAddress(),
+                    membership.getType(),
+                    frequency); // Pass the frequency here
+
+            if (isUpdated) {
+                System.out.println(languageManager.getMessage("profile_updated_successfully"));
+            } else {
+                System.out.println(languageManager.getMessage("profile_update_failed"));
+            }
+        } catch (SQLException e) {
+            System.out.println(languageManager.getMessage("database_error") + ": " + e.getMessage());
+        }
 
         Notification paymentNotification = NotificationFactory.createNotification("email", languageManager.getMessage("profile_updated_successfully"));
         addNotification(paymentNotification);
@@ -217,7 +243,6 @@ public class MemberController {
         }
         return false; // Return false to continue the session
     }
-
 
     /**
      * Checks balance of member
@@ -433,5 +458,4 @@ public class MemberController {
         System.out.println("Member not found.");
         return null;
     }
-
 }

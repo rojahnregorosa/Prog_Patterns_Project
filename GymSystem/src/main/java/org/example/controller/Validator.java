@@ -163,4 +163,29 @@ public class Validator {
             }
         }
     }
+
+    /**
+     * Prompts the user for a frequency input (monthly or yearly) and validates the input.
+     *
+     * @param prompt The prompt message to display to the user, asking for the frequency.
+     * @return A valid frequency input, either "monthly" or "yearly".
+     */
+    public static String validateFrequency(String prompt) {
+        Scanner scanner = new Scanner(System.in);
+        String frequency = "";
+
+        while (true) {
+            System.out.print(prompt);  // Display the prompt
+            frequency = scanner.nextLine();
+
+            // Check if the input is valid (either "monthly" or "yearly")
+            if ("monthly".equals(frequency) || "yearly".equals(frequency)) {
+                break;  // Valid input, exit the loop
+            } else {
+                // Inform the user of invalid input and prompt again
+                System.out.println("Invalid input. Please enter 'monthly' or 'yearly'.");
+            }
+        }
+        return frequency;
+    }
 }
