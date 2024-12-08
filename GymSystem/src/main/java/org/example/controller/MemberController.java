@@ -115,6 +115,7 @@ public class MemberController {
             System.out.println(languageManager.getMessage("profile_details"));
             System.out.println(languageManager.getMessage("member_id") + ": " + memberProfile.getMemberId());
             System.out.println(languageManager.getMessage("member_name") + ": " + memberProfile.getFname() + " " + memberProfile.getLname());
+            System.out.println(languageManager.getMessage("phone_number") + ": " + memberProfile.getPhoneNumber());
             System.out.println(languageManager.getMessage("street_number") + ": " + memberProfile.getAddress().getStreetNumber());
             System.out.println(languageManager.getMessage("street_name") + ": " + memberProfile.getAddress().getStreetName());
             System.out.println(languageManager.getMessage("city") + ": " + memberProfile.getAddress().getCity());
@@ -217,7 +218,6 @@ public class MemberController {
         }
         return false; // Return false to continue the session
     }
-
 
     /**
      * Checks balance of member
@@ -433,5 +433,4 @@ public class MemberController {
         System.out.println("Member not found.");
         return null;
     }
-
 }
