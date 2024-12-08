@@ -25,15 +25,35 @@ public class GymSystem {
         boolean running = true;
 
         while (running) {
+            // Print the options to the user
             System.out.println(LanguageManager.getInstance().getMessage("select_option"));
             System.out.println("1. " + LanguageManager.getInstance().getMessage("login_member"));
             System.out.println("2. " + LanguageManager.getInstance().getMessage("login_employee"));
             System.out.println("3. " + LanguageManager.getInstance().getMessage("sign_up"));
             System.out.println("4. " + LanguageManager.getInstance().getMessage("exit"));
 
-            int choice = sc.nextInt();
-            sc.nextLine();
+            int choice = -1;
 
+            // Loop until a valid integer choice is entered
+            while (true) {
+                if (sc.hasNextInt()) {  // Check if input is an integer
+                    choice = sc.nextInt();
+                    sc.nextLine();  // Consume the newline character
+                    break;  // Exit the loop if a valid integer is entered
+                } else {
+                    System.out.println(LanguageManager.getInstance().getMessage("invalid_choice"));
+                    sc.nextLine();  // Consume invalid input
+
+                    // Reprint the options after invalid input
+                    System.out.println(LanguageManager.getInstance().getMessage("select_option"));
+                    System.out.println("1. " + LanguageManager.getInstance().getMessage("login_member"));
+                    System.out.println("2. " + LanguageManager.getInstance().getMessage("login_employee"));
+                    System.out.println("3. " + LanguageManager.getInstance().getMessage("sign_up"));
+                    System.out.println("4. " + LanguageManager.getInstance().getMessage("exit"));
+                }
+            }
+
+            // Now that we have a valid choice, process it
             switch (choice) {
                 case 1 -> handleMemberLogin();
                 case 2 -> handleEmployeeLogin();
@@ -51,20 +71,28 @@ public class GymSystem {
      * Prompts the user to choose a language
      */
     private void chooseLanguage() {
-        System.out.println("Choose language:");
-        System.out.println("1. English");
-        System.out.println("2. Français");
+        int languageChoice = 0; // Initialize variable for language choice
 
-        int languageChoice = sc.nextInt();
-        sc.nextLine(); // Consume newline
+        while (languageChoice != 1 && languageChoice != 2) {
+            System.out.println("Choose language:");
+            System.out.println("1. English");
+            System.out.println("2. Français");
 
-        if (languageChoice == 1) {
-            LanguageManager.getInstance().setLanguage("en");
-        } else if (languageChoice == 2) {
-            LanguageManager.getInstance().setLanguage("fr");
-        } else {
-            System.out.println("Invalid choice. Defaulting to English.");
-            LanguageManager.getInstance().setLanguage("en");
+            if (sc.hasNextInt()) {  // Check if input is an integer
+                languageChoice = sc.nextInt();
+                sc.nextLine(); // Consume newline
+
+                if (languageChoice == 1) {
+                    LanguageManager.getInstance().setLanguage("en");
+                } else if (languageChoice == 2) {
+                    LanguageManager.getInstance().setLanguage("fr");
+                } else {
+                    System.out.println("Invalid choice. Please select 1 or 2.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number.");
+                sc.nextLine(); // Consume invalid input
+            }
         }
     }
 
