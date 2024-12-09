@@ -1,9 +1,6 @@
 package org.example.database;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class DatabaseSetup {
 
@@ -39,18 +36,6 @@ public class DatabaseSetup {
                         );
                     """;
             stmt.execute(createMembersTable);
-
-            String createPaymentsTable = """
-                        CREATE TABLE IF NOT EXISTS Payments (
-                            id INTEGER PRIMARY KEY,
-                            member_id INTEGER,
-                            amount REAL,
-                            payment_date TEXT,
-                            payment_method TEXT,
-                            FOREIGN KEY (member_id) REFERENCES Members(id)
-                        );
-                    """;
-            stmt.execute(createPaymentsTable);
 
             String createEmployeesTable = """
                         CREATE TABLE IF NOT EXISTS Employees (
@@ -95,28 +80,4 @@ public class DatabaseSetup {
             }
         }
     }
-
-    /**
-     *can remove later, only used if problems w the tables
-     */
-//    public static void dropTables() {
-//        try (Connection conn = DatabaseConnection.connect();
-//             Statement stmt = conn.createStatement()) {
-//
-//            String dropEmployeeTable = "DROP TABLE IF EXISTS Employees;";
-////            String dropMemberTable = "DROP TABLE IF EXISTS Members;";
-//            String dropMembershipTypeTable = "DROP TABLE IF EXISTS MembershipTypes;";
-//            String dropAddressesTable = "DROP TABLE IF EXISTS Addresses;";
-//
-//            stmt.execute(dropAddressesTable);
-//            stmt.execute(dropEmployeeTable);
-////            stmt.execute(dropMemberTable);
-//            stmt.execute(dropMembershipTypeTable);
-//
-//            System.out.println("Tables deleted successfully.");
-//        } catch (SQLException e) {
-//            System.out.println("Error deleting tables: " + e.getMessage());
-//        }
-//    }
-
 }
