@@ -2,16 +2,17 @@ package org.example.controller;
 
 import lombok.Getter;
 import org.example.database.DatabaseConnection;
+import org.example.model.Address;
 import org.example.model.Employee;
 import org.example.model.Member;
 import org.example.model.MembershipType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 @Getter
@@ -32,11 +33,42 @@ public class EmployeeController {
      * @return employee with that id
      */
     public Employee findEmployeeByID(String employeeID) {
-        for (Employee employee : employees) {
-            if (Objects.equals(employee.getEmployeeId(), employeeID)) {
-                return employee;
+        String employeeQuery = "SELECT * FROM Employees WHERE id = ?";
+        String addressQuery = "SELECT * FROM Addresses WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement employeeStmt = conn.prepareStatement(employeeQuery)) {
+
+            employeeStmt.setString(1, employeeID);
+            ResultSet employeeRs = employeeStmt.executeQuery();
+
+            if (employeeRs.next()) {
+                String firstName = employeeRs.getString("first_name");
+                String lastName = employeeRs.getString("last_name");
+                String phoneNumber = employeeRs.getString("phone_number");
+
+                // Fetch address ID and query the Addresses table
+                try (PreparedStatement addressStmt = conn.prepareStatement(addressQuery)) {
+                    ResultSet addressRs = addressStmt.executeQuery();
+
+                    Address address = null;
+                    if (addressRs.next()) {
+                        int streetNumber = addressRs.getInt("street_number");
+                        String streetName = addressRs.getString("street_name");
+                        String city = addressRs.getString("city");
+                        String province = addressRs.getString("province");
+                        String zipCode = addressRs.getString("zip_code");
+
+                        // Construct the Address object
+                        address = new Address(streetNumber, streetName, city, province, zipCode);
+                    }
+                    return new Employee(firstName, lastName, address, phoneNumber, employeeID);
+                }
             }
+        } catch (SQLException e) {
+            System.out.println("Error finding employee by ID: " + e.getMessage());
         }
+        System.out.println("Employee not found.");
         return null;
     }
 
