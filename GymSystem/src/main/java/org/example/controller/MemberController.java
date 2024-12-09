@@ -10,10 +10,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-import static org.example.model.Member.*;
+import static org.example.model.Member.addNotification;
+import static org.example.model.Member.getNotifications;
 
 public class MemberController {
     private final List<Member> members;
@@ -25,7 +27,7 @@ public class MemberController {
     }
 
     /**
-     * Signs in new member to the system
+     * Signs up a new member
      */
     public void signUpMember() {
         Scanner sc = new Scanner(System.in);
@@ -45,13 +47,10 @@ public class MemberController {
         Address address = new Address(streetNumber, streetName, city, province, zipCode);
 
         // Prompt user to select membership type without a separate method
-
         System.out.println(languageManager.getMessage("select_membership_type"));
-
         System.out.println("1. " + languageManager.getMessage("membership_regular") + " - " +
                 languageManager.getMessage("membership_price_monthly", MembershipType.REGULAR.getMonthlyPrice()) + ", " +
                 languageManager.getMessage("membership_price_yearly", MembershipType.REGULAR.getYearlyPrice()));
-
         System.out.println("2. " + languageManager.getMessage("membership_premium") + " - " +
                 languageManager.getMessage("membership_price_monthly", MembershipType.PREMIUM.getMonthlyPrice()) + ", " +
                 languageManager.getMessage("membership_price_yearly", MembershipType.PREMIUM.getYearlyPrice()));
@@ -62,27 +61,36 @@ public class MemberController {
         MembershipType membershipType = (typeChoice == 1) ? MembershipType.REGULAR : MembershipType.PREMIUM;
         Membership membership = new Membership(membershipType);
 
-        // Ask for payment frequency
-        System.out.println(languageManager.getMessage("select_payment_frequency"));
-        System.out.println("1. " + languageManager.getMessage("payment_frequency_monthly"));
-        System.out.println("2. " + languageManager.getMessage("payment_frequency_yearly"));
+        // Ask for payment frequency with validation
+        int frequencyChoice = -1;
+        boolean validFrequency = false;
 
-        int frequencyChoice = sc.nextInt();
-        sc.nextLine(); // Consume newline
-        boolean isMonthly = (frequencyChoice == 1);
+        while (!validFrequency) {
+            System.out.println(languageManager.getMessage("select_payment_frequency"));
+            System.out.println("1. " + languageManager.getMessage("payment_frequency_monthly"));
+            System.out.println("2. " + languageManager.getMessage("payment_frequency_yearly"));
 
-        // Set initial balance based on payment frequency
-        double initialBalance;
-        if (frequencyChoice == 1) {
-            initialBalance = membershipType.getMonthlyPrice();
-        } else if (frequencyChoice == 2) {
-            initialBalance = membershipType.getYearlyPrice();
-        } else {
-            System.out.println(languageManager.getMessage("invalid_frequency_message"));
-            initialBalance = 0;
+            try {
+                frequencyChoice = sc.nextInt();
+                sc.nextLine(); // Consume newline
+
+                // Check if the input is 1 or 2
+                if (frequencyChoice == 1 || frequencyChoice == 2) {
+                    validFrequency = true;
+                } else {
+                    System.out.println(languageManager.getMessage("invalid_frequency_message"));
+                }
+            } catch (InputMismatchException e) {
+                // Handle case where the input is not a number
+                System.out.println(languageManager.getMessage("invalid_frequency_message"));
+                sc.nextLine(); // Consume the invalid input
+            }
         }
 
-        // Creating the new member with an initial balance of 0
+        // Set initial balance based on payment frequency
+        double initialBalance = (frequencyChoice == 1) ? membershipType.getMonthlyPrice() : membershipType.getYearlyPrice();
+
+        // Creating the new member with an initial balance
         Member newMember = new Member(firstName, lastName, address, phoneNumber, new Membership(membershipType), initialBalance);
 
         MemberDatabase memberDatabase = null;
@@ -93,7 +101,7 @@ public class MemberController {
         }
 
         // Add the member to the database and get the member ID
-        int memberId = memberDatabase.addMember(firstName, lastName, phoneNumber, address, membershipType, isMonthly);
+        int memberId = memberDatabase.addMember(firstName, lastName, phoneNumber, address, membershipType, frequencyChoice == 1);
 
         if (memberId != -1) {
             newMember.setMemberId(String.valueOf(memberId)); // Set the generated member ID

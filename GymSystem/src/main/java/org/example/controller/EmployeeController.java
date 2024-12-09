@@ -19,6 +19,7 @@ import java.util.Scanner;
 public class EmployeeController {
     private static List<Member> members;
     private List<Employee> employees;
+    private MemberController memberController = new MemberController();
 
     public EmployeeController() {
         super();
@@ -81,20 +82,6 @@ public class EmployeeController {
     }
 
     /**
-     * Helper method to add member
-     *
-     * @param member to add
-     * @return added member
-     */
-    private static boolean addMember(Member member) {
-        if (member != null && !members.contains(member)) {
-            members.add(member);
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Deletes a member from the system
      */
     public void promptRemoveMember() {
@@ -118,51 +105,64 @@ public class EmployeeController {
      * @return removed member
      */
     private static boolean removeMember(String memberID) {
-        String sql = "DELETE FROM Members WHERE id = ?";
-        try (Connection conn = DatabaseConnection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, Integer.parseInt(memberID));
-            int affectedRows = pstmt.executeUpdate();
+        // First, delete the associated address from the Addresses table
+        String addressSql = "DELETE FROM Addresses WHERE id = (SELECT address_id FROM Members WHERE id = ?)";
 
-            if (affectedRows > 0) {
-                System.out.println("Member deleted successfully.");
-                return true;
-            } else {
-                System.out.println("Member not found.");
-                return false;
+        try (Connection conn = DatabaseConnection.connect()) {
+            // Remove address first
+            try (PreparedStatement pstmtAddress = conn.prepareStatement(addressSql)) {
+                pstmtAddress.setInt(1, Integer.parseInt(memberID));
+                pstmtAddress.executeUpdate();
+            }
+
+            // Now remove the member from the Members table
+            String memberSql = "DELETE FROM Members WHERE id = ?";
+            try (PreparedStatement pstmtMember = conn.prepareStatement(memberSql)) {
+                pstmtMember.setInt(1, Integer.parseInt(memberID));
+                int affectedRows = pstmtMember.executeUpdate();
+
+                if (affectedRows > 0) {
+                    return true; // Member and address removed successfully
+                } else {
+                    System.out.println("Member not found.");
+                    return false;
+                }
             }
         } catch (SQLException e) {
-            System.out.println("Error deleting member: " + e.getMessage());
+            System.out.println("Error deleting member and associated address: " + e.getMessage());
             return false;
         }
     }
 
     /**
-     * Update member
+     * Updates a member
      *
      */
     public void promptUpdateMember() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter Member ID: ");
         String id = scanner.nextLine();
-        for (Member member : members) {
-            if (member.getMemberId().equals(id)) {
-                updateMember(id, member);
-            }
+
+        // Call the findMemberByID method from MemberController to fetch the member by ID
+        Member memberToUpdate = memberController.findMemberByID(id);
+
+        // If the member is found, proceed to update their profile
+        if (memberToUpdate != null) {
+            updateMember(memberToUpdate);  // Pass the member directly for updating
+        } else {
+            System.out.println("Member ID not found.");  // If member doesn't exist, notify the employee
         }
     }
 
     /**
-     * Helps main method update member
+     * Helper method to update member
      *
-     * @param memberID      to find
-     * @param updatedMember to update
+     * @param updatedMember
      */
-    public void updateMember(String memberID, Member updatedMember) {
-        MemberController memberController = new MemberController();
-        if (memberID.equals(updatedMember.getMemberId())) {
-            memberController.updateMemberProfile(updatedMember);
-        }
+    private void updateMember(Member updatedMember) {
+        // Directly update the member's profile without creating a new instance of MemberController
+        memberController.updateMemberProfile(updatedMember);
+        System.out.println("Member profile updated successfully.");
     }
 
     /**
